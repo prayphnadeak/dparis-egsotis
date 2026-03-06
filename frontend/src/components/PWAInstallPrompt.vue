@@ -87,9 +87,21 @@ onMounted(() => {
 })
 
 const openDirectUrl = () => {
-  // Hugging Face direct space URL
-  const directUrl = window.location.href.replace('huggingface.co/spaces/', '').replace('?', '').split('/')[0]
-  window.open(`https://${directUrl.replace('/', '-')}.hf.space`, '_blank')
+  // Hugging Face direct space URL extraction
+  // Pattern: huggingface.co/spaces/USER/SPACE
+  const match = window.location.href.match(/huggingface\.co\/spaces\/([^/?#]+)\/([^/?#]+)/)
+  
+  if (match) {
+    const user = match[1]
+    const space = match[2]
+    // Hugging Face direct URLs use hyphens instead of underscores or slashes
+    // and the format is user-space.hf.space
+    const directDomain = `${user}-${space}`.replace(/[\/_]/g, '-')
+    window.open(`https://${directDomain}.hf.space`, '_blank')
+  } else {
+    // Fallback to known direct URL if extraction fails
+    window.open('https://prayphnadeak-dparis-egsotis.hf.space', '_blank')
+  }
   showPrompt.value = false
 }
 
