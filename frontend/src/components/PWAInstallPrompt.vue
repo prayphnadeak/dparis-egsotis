@@ -12,7 +12,12 @@
         </div>
         
         <div class="body">
-          <p v-if="isIOS">
+          <!-- If in iframe (Hugging Face) -->
+          <p v-if="isInIframe">
+            Anda sedang membuka aplikasi di dalam Hugging Face. <br/>
+            <b>Klik tombol di bawah</b> untuk membuka versi penuh agar bisa diinstal ke HP.
+          </p>
+          <p v-else-if="isIOS">
             Ketuk ikon <b>Bagikan</b> di navigasi bawah browser, lalu pilih <b>"Tambah ke Layar Utama"</b>.
           </p>
           <p v-else>
@@ -21,7 +26,8 @@
         </div>
 
         <div class="footer">
-          <button v-if="deferredPrompt" class="install-btn" @click="installApp">Instal Sekarang</button>
+          <button v-if="isInIframe" class="install-btn" @click="openDirectUrl">Buka Mode Penuh</button>
+          <button v-else-if="deferredPrompt" class="install-btn" @click="installApp">Instal Sekarang</button>
           <button v-else-if="isIOS" class="install-btn" @click="closePrompt">Saya Mengerti</button>
         </div>
       </div>
@@ -35,6 +41,7 @@ import { ref, onMounted } from 'vue'
 const showPrompt = ref(false)
 const deferredPrompt = ref(null)
 const isIOS = ref(false)
+const isInIframe = ref(false)
 
 onMounted(() => {
   // Check if already in standalone mode
@@ -42,11 +49,26 @@ onMounted(() => {
     return
   }
 
+  // Detect iframe context (Hugging Face)
+  try {
+    isInIframe.value = window.self !== window.top
+  } catch (e) {
+    isInIframe.value = true
+  }
+
   // Detect iOS
   const userAgent = window.navigator.userAgent.toLowerCase()
   isIOS.value = /iphone|ipad|ipod/.test(userAgent)
 
-  // Android/Chrome event
+  if (isInIframe.value) {
+    // Automatically show prompt in Hugging Face to guide user out of the iframe
+    setTimeout(() => {
+      showPrompt.value = true
+    }, 2000)
+    return
+  }
+
+  // Android/Chrome event (only works on direct domain, not in iframe)
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault()
     deferredPrompt.value = e
@@ -63,6 +85,13 @@ onMounted(() => {
     }
   }
 })
+
+const openDirectUrl = () => {
+  // Hugging Face direct space URL
+  const directUrl = window.location.href.replace('huggingface.co/spaces/', '').replace('?', '').split('/')[0]
+  window.open(`https://${directUrl.replace('/', '-')}.hf.space`, '_blank')
+  showPrompt.value = false
+}
 
 const installApp = async () => {
   if (!deferredPrompt.value) return
