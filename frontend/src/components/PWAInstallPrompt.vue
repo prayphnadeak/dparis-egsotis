@@ -3,7 +3,7 @@
     <div v-if="showPrompt" class="install-prompt-overlay">
       <div class="install-prompt-card">
         <div class="header">
-          <img src="/src/assets/logo.png" alt="Logo" class="app-logo" />
+          <img src="/icon-192.png" alt="Logo" class="app-logo" />
           <div class="info">
             <div class="title">Pasang D'Paris Egsotis</div>
             <div class="subtitle">Akses cepat dari layar utama Anda</div>
