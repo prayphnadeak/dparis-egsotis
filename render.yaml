@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dparis-backend
+    env: docker
+    dockerContext: backend
+    dockerfilePath: backend/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./dparis.db
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: 7860
