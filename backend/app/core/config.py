@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
 
     # Database
-    DATABASE_URL: str = "mysql+pymysql://root:@localhost:3306/dparis_db"
+    DATABASE_URL: str = "sqlite:///./dparis.db"
 
     # JWT
     SECRET_KEY: str = "dparis-egsotis-secret-key-change-in-production"
