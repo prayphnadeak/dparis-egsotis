@@ -23,7 +23,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY backend/app ./app
 COPY backend/static ./static
-COPY backend/dparis.db ./dparis.db
 
 # Copy built frontend from Stage 1
 COPY --from=frontend-builder /app/frontend/dist ./dist
