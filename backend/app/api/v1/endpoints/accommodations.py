@@ -16,7 +16,7 @@ def list_accommodations(
     q: str = "",
     category: Optional[str] = None,
     skip: int = 0,
-    limit: int = 20,
+    limit: int = 200,
     db: Session = Depends(get_db),
 ):
     return AccommodationService(db).list(q, category, skip, limit)

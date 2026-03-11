@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[CulinaryResponse], summary="Daftar tempat kuliner")
-def list_culinary(q: str = "", category: Optional[str] = None, skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+def list_culinary(q: str = "", category: Optional[str] = None, skip: int = 0, limit: int = 200, db: Session = Depends(get_db)):
     return CulinaryService(db).list(q, category, skip, limit)
 
 

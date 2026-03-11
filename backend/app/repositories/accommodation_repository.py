@@ -10,7 +10,7 @@ class AccommodationRepository(BaseRepository[Accommodation]):
     def __init__(self, db: Session):
         super().__init__(Accommodation, db)
 
-    def search(self, query: str, category: Optional[str] = None, skip: int = 0, limit: int = 20) -> List[Accommodation]:
+    def search(self, query: str, category: Optional[str] = None, skip: int = 0, limit: int = 200) -> List[Accommodation]:
         q = self.db.query(Accommodation).filter(Accommodation.is_active == True)
         if query:
             q = q.filter(Accommodation.name.ilike(f"%{query}%"))
@@ -18,7 +18,7 @@ class AccommodationRepository(BaseRepository[Accommodation]):
             q = q.filter(Accommodation.category == category)
         return q.order_by(Accommodation.name).offset(skip).limit(limit).all()
 
-    def get_active(self, skip: int = 0, limit: int = 20) -> List[Accommodation]:
+    def get_active(self, skip: int = 0, limit: int = 200) -> List[Accommodation]:
         return (
             self.db.query(Accommodation)
             .filter(Accommodation.is_active == True)

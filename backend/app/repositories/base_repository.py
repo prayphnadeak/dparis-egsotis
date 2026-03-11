@@ -16,7 +16,7 @@ class BaseRepository(Generic[ModelType]):
     def get(self, id: int) -> Optional[ModelType]:
         return self.db.query(self.model).filter(self.model.id == id).first()
 
-    def get_all(self, skip: int = 0, limit: int = 20) -> List[ModelType]:
+    def get_all(self, skip: int = 0, limit: int = 200) -> List[ModelType]:
         return self.db.query(self.model).offset(skip).limit(limit).all()
 
     def create(self, obj: ModelType) -> ModelType:

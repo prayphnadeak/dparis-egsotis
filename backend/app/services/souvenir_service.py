@@ -12,7 +12,7 @@ class SouvenirService:
     def __init__(self, db: Session):
         self.repo = SouvenirRepository(db)
 
-    def list(self, query: str = "", skip: int = 0, limit: int = 100) -> List[SouvenirShop]:
+    def list(self, query: str = "", skip: int = 0, limit: int = 200) -> List[SouvenirShop]:
         if query:
             return self.repo.search(query, skip, limit)
         return self.repo.get_active(skip, limit)

@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[TourismResponse], summary="Daftar objek wisata")
-def list_tourism(q: str = "", category: Optional[str] = None, skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+def list_tourism(q: str = "", category: Optional[str] = None, skip: int = 0, limit: int = 200, db: Session = Depends(get_db)):
     return TourismService(db).list(q, category, skip, limit)
 
 

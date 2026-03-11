@@ -12,7 +12,7 @@ class TourismService:
     def __init__(self, db: Session):
         self.repo = TourismRepository(db)
 
-    def list(self, query: str = "", category: Optional[str] = None, skip: int = 0, limit: int = 20) -> List[TourismObject]:
+    def list(self, query: str = "", category: Optional[str] = None, skip: int = 0, limit: int = 200) -> List[TourismObject]:
         if query or category:
             return self.repo.search(query, category, skip, limit)
         return self.repo.get_active(skip, limit)

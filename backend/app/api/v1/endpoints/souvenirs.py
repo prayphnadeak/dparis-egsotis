@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[SouvenirResponse], summary="Daftar toko oleh-oleh")
-def list_souvenirs(q: str = "", skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def list_souvenirs(q: str = "", skip: int = 0, limit: int = 200, db: Session = Depends(get_db)):
     return SouvenirService(db).list(q, skip, limit)
 
 

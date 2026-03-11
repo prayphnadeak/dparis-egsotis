@@ -10,7 +10,7 @@ class TourismRepository(BaseRepository[TourismObject]):
     def __init__(self, db: Session):
         super().__init__(TourismObject, db)
 
-    def search(self, query: str, category: Optional[str] = None, skip: int = 0, limit: int = 20) -> List[TourismObject]:
+    def search(self, query: str, category: Optional[str] = None, skip: int = 0, limit: int = 200) -> List[TourismObject]:
         q = self.db.query(TourismObject).filter(TourismObject.is_active == True)
         if query:
             q = q.filter(TourismObject.name.ilike(f"%{query}%"))
@@ -18,7 +18,7 @@ class TourismRepository(BaseRepository[TourismObject]):
             q = q.filter(TourismObject.category == category)
         return q.order_by(TourismObject.name).offset(skip).limit(limit).all()
 
-    def get_active(self, skip: int = 0, limit: int = 20) -> List[TourismObject]:
+    def get_active(self, skip: int = 0, limit: int = 200) -> List[TourismObject]:
         return (
             self.db.query(TourismObject)
             .filter(TourismObject.is_active == True)
