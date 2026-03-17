@@ -31,7 +31,7 @@
           </div>
           <div class="team-info">
             <div class="team-name">Pray Putra Hasianro Nadeak, S.ST.</div>
-            <div class="team-role">Developer</div>Supporting System
+            <div class="team-role">Developer</div>
           </div>
         </div>
         <br>
