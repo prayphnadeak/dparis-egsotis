@@ -9,3 +9,8 @@ dist/
 build/
 .vscode/
 .idea/
+*.db-shm
+*.db-wal
+~$*
+*backup*
+*.log

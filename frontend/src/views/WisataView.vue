@@ -49,10 +49,14 @@
         v-for="item in paginatedData"
         :key="item.id"
         class="list-card"
-        @click="showDetail(item)"
+        @click="goToDetail(item.id)"
       >
         <div class="list-card-name">{{ item.name }}</div>
-        <div class="list-card-sub">
+        <div class="star-row" v-if="item.rating !== null && item.rating !== undefined">
+          <span v-for="s in 5" :key="s" class="star" :class="starClass(item.rating, s)">&#9733;</span>
+          <span class="rating-val">{{ item.rating ? item.rating.toFixed(1) : '' }}</span>
+        </div>
+        <div v-else class="list-card-sub">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="opacity:.7">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
           </svg>
@@ -75,56 +79,23 @@
       </div>
     </div>
 
-    <!-- Modal Detail -->
-    <transition name="slide-up">
-      <div v-if="selected" class="modal-overlay" @click.self="selected = null">
-        <div class="modal-card">
-          <div class="modal-header">
-            <span>{{ selected.name }}</span>
-            <button class="modal-close" @click="selected = null">✕</button>
-          </div>
-          <div class="modal-body">
-            <div class="detail-row">
-              <div class="detail-label">NO</div>
-              <div class="detail-value">{{ selected.id }}</div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">NAMA OBJEK WISATA</div>
-              <div class="detail-value">{{ selected.name }}</div>
-            </div>
-            <a
-              v-if="selected.maps_link"
-              :href="selected.maps_link"
-              target="_blank"
-              rel="noopener"
-              class="lokasi-btn"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-              </svg>
-              Navigasi ke Lokasi
-            </a>
-            <div v-else class="no-link-msg">📍 Link lokasi belum tersedia</div>
-          </div>
-        </div>
-      </div>
-    </transition>
     <AppFooter />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import AppFooter from '../components/AppFooter.vue'
 
 const API_BASE = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : ''
+const router = useRouter()
 
 const search   = ref('')
 const places   = ref([])
 const loading  = ref(true)
 const error    = ref('')
-const selected = ref(null)
 
 async function fetchData() {
   loading.value = true
@@ -180,7 +151,28 @@ function nextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-const showDetail = (item) => { selected.value = item }
+const goToDetail = (id) => router.push({ name: 'wisata-detail', params: { id } })
+
+function starClass(rating, starIndex) {
+  if (rating >= starIndex) return 'full'
+  if (rating >= starIndex - 0.5) return 'half'
+  return 'empty'
+}
+
+const landmarks = [
+  { key: 'dist_gunung_dempo',         label: 'GUNUNG DEMPO'         },
+  { key: 'dist_pasar_dempo_permai',   label: 'PASAR DEMPO PERMAI'   },
+  { key: 'dist_bandara_atung_bungsu', label: 'BANDARA ATUNG BUNGSU' },
+  { key: 'dist_rsud_besemah',         label: 'RSUD BESEMAH'         },
+  { key: 'dist_spbu_air_perikan',     label: 'SPBU AIR PERIKAN'     },
+  { key: 'dist_spbu_simpang_manna',   label: 'SPBU SIMPANG MANNA'   },
+  { key: 'dist_spbu_pengandonan',     label: 'SPBU PENGANDONAN'     },
+  { key: 'dist_spbu_karang_dalo',     label: 'SPBU KARANG DALO'     },
+]
+
+function hasDistances(item) {
+  return item && landmarks.some(lm => item[lm.key] !== null && item[lm.key] !== undefined)
+}
 
 onMounted(fetchData)
 </script>
@@ -204,6 +196,25 @@ onMounted(fetchData)
   margin-top: 3px;
   font-weight: 500;
 }
+.star-row {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  margin-top: 6px;
+}
+.star { font-size: 1rem; line-height: 1; color: #ddd; }
+.star.full  { color: #f5c518; }
+.star.half  { color: #f5c518; opacity: 0.6; }
+.star.empty { color: rgba(255,255,255,0.35); }
+.rating-val { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.85); margin-left: 5px; }
+
+/* Modal stars */
+.star-row-modal { display: flex; align-items: center; gap: 2px; }
+.star-modal { font-size: 1.05rem; line-height: 1; color: rgba(255,255,255,0.3); }
+.star-modal.full  { color: #f5c518; }
+.star-modal.half  { color: #f5c518; opacity: 0.6; }
+.star-modal.empty { color: rgba(255,255,255,0.25); }
+.rating-val-modal { font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-left: 6px; }
 .empty-msg { text-align: center; color: rgba(255,255,255,0.7); padding: 30px 0; font-size: 0.9rem; }
 
 /* Filters */

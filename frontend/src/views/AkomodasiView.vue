@@ -85,6 +85,10 @@
       >
         <div class="list-card-name">{{ item.name }}</div>
         <div class="list-card-sub">{{ item.category }}</div>
+        <div class="star-row" v-if="item.rating !== null && item.rating !== undefined">
+          <span v-for="s in 5" :key="s" class="star" :class="starClass(item.rating, s)">&#9733;</span>
+          <span class="rating-val">{{ item.rating ? item.rating.toFixed(1) : '' }}</span>
+        </div>
       </div>
       <div v-if="filtered.length === 0" class="empty-msg">
         Tidak ada hasil ditemukan.
@@ -233,6 +237,12 @@ function onSearch() {
   searchTimer = setTimeout(fetchData, 350)
 }
 
+function starClass(rating, starIndex) {
+  if (rating >= starIndex) return 'full'
+  if (rating >= starIndex - 0.5) return 'half'
+  return 'empty'
+}
+
 const goDetail = (id) => router.push(`/akomodasi/${id}`)
 
 onMounted(fetchData)
@@ -257,6 +267,27 @@ onMounted(fetchData)
   opacity: 0.8;
   margin-top: 3px;
   font-weight: 500;
+}
+.star-row {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  margin-top: 6px;
+}
+.star {
+  font-size: 1rem;
+  line-height: 1;
+  color: #ccc;
+  transition: color 0.15s;
+}
+.star.full  { color: #f5c518; }
+.star.half  { color: #f5c518; opacity: 0.6; }
+.star.empty { color: #ddd; }
+.rating-val {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-left: 5px;
 }
 .empty-msg {
   text-align: center;

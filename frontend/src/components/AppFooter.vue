@@ -1,7 +1,9 @@
 <template>
   <footer class="app-footer">
     <div class="footer-banner">
-      <img src="../assets/footer_banner.png" alt="Pagar Alam Banner" class="banner-img">
+      <a href="https://sensus.bps.go.id/se2026/" target="_blank" rel="noopener" style="display:block;">
+        <img src="../assets/footer_banner.png" alt="Pagar Alam Banner" class="banner-img">
+      </a>
     </div>
     <p>&copy; 2026 BPS Kota Pagar Alam. All rights reserved.</p>
   </footer>

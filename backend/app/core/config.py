@@ -65,7 +65,7 @@ class Settings(BaseSettings):
         return v
 
     # Rate limiting
-    RATE_LIMIT_PER_MINUTE: int = 60
+    RATE_LIMIT_PER_MINUTE: int = 30
 
     @property
     def allowed_image_types_list(self) -> List[str]:

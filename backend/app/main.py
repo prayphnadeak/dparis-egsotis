@@ -44,6 +44,10 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Rate Limiting
+    from app.middlewares.rate_limit import RateLimitMiddleware
+    application.add_middleware(RateLimitMiddleware)
+
     # Static files (uploads)
     application.mount("/static", StaticFiles(directory="static"), name="static")
 

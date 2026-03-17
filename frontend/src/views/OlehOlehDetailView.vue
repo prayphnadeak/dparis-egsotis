@@ -1,11 +1,11 @@
 <template>
   <div class="page-wrapper">
-    <AppHeader title="AKOMODASI" />
+    <AppHeader title="OLEH-OLEH" />
 
     <!-- Loading -->
     <div v-if="loading" class="state-msg">
       <div class="spinner"></div>
-      <span>Memuat detail akomodasi...</span>
+      <span>Memuat detail toko oleh-oleh...</span>
     </div>
 
     <!-- Error -->
@@ -16,11 +16,10 @@
 
     <!-- Content -->
     <template v-else-if="item">
-      <!-- Name hero -->
+      <!-- Hero -->
       <div class="detail-hero">
         <h2>{{ item.name }}</h2>
-        <div class="detail-hero-sub">{{ item.category }}</div>
-        <!-- Star rating -->
+        <div class="detail-hero-sub">Toko Oleh-Oleh</div>
         <div class="star-row" v-if="item.rating !== null && item.rating !== undefined">
           <span v-for="s in 5" :key="s" class="star" :class="starClass(item.rating, s)">&#9733;</span>
           <span class="rating-val">{{ item.rating ? item.rating.toFixed(1) : '' }}</span>
@@ -28,7 +27,7 @@
       </div>
 
       <!-- Detail body -->
-      <div class="detail-body" style="flex:1; overflow-y:auto;">
+      <div class="detail-body">
 
         <!-- Info Umum -->
         <div class="section-title">INFORMASI UMUM</div>
@@ -37,8 +36,8 @@
           <div class="detail-value">{{ item.id }}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">KATEGORI AKOMODASI</div>
-          <div class="detail-value">{{ item.category }}</div>
+          <div class="detail-label">NAMA TOKO</div>
+          <div class="detail-value">{{ item.name }}</div>
         </div>
         <div class="detail-row">
           <div class="detail-label">RATING</div>
@@ -48,40 +47,6 @@
               <span class="rating-val-detail">{{ item.rating ? item.rating.toFixed(1) : '-' }} / 5</span>
             </div>
             <span v-else>-</span>
-          </div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">ALAMAT</div>
-          <div class="detail-value">{{ item.address || '-' }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">NOMOR TELEPON</div>
-          <div class="detail-value">
-            <a v-if="item.phone" :href="`tel:${item.phone}`" class="tel-link">
-              {{ item.phone }}
-            </a>
-            <span v-else>-</span>
-          </div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">JUMLAH KAMAR</div>
-          <div class="detail-value">{{ item.total_rooms }} kamar</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">JUMLAH TEMPAT TIDUR</div>
-          <div class="detail-value">{{ item.total_beds }} tempat tidur</div>
-        </div>
-
-        <!-- Facilities -->
-        <div class="section-title" style="margin-top:14px;">FASILITAS</div>
-        <div class="detail-row">
-          <div class="facility-grid">
-            <div v-for="f in facilities" :key="f.key" class="facility-item">
-              <div class="check" :class="{ active: item[f.key] }">
-                {{ item[f.key] ? '✓' : '✗' }}
-              </div>
-              <span>{{ f.name }}</span>
-            </div>
           </div>
         </div>
 
@@ -97,14 +62,8 @@
           </div>
         </div>
 
-        <!-- Location button -->
-        <a
-          v-if="item.maps_link"
-          :href="item.maps_link"
-          target="_blank"
-          rel="noopener"
-          class="lokasi-btn"
-        >
+        <!-- Maps button -->
+        <a v-if="item.maps_link" :href="item.maps_link" target="_blank" rel="noopener" class="lokasi-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
           </svg>
@@ -113,7 +72,6 @@
       </div>
     </template>
 
-    <!-- Not found -->
     <div v-else class="state-msg">Data tidak ditemukan.</div>
   </div>
 </template>
@@ -132,18 +90,6 @@ const item    = ref(null)
 const loading = ref(true)
 const error   = ref('')
 
-// Daftar fasilitas yang ditampilkan
-const facilities = [
-  { key: 'hot_water',    name: 'Air Panas/Dingin' },
-  { key: 'tv_cable',     name: 'TV Kabel'         },
-  { key: 'free_wifi',    name: 'Free Wifi'         },
-  { key: 'restaurant',   name: 'Restoran'          },
-  { key: 'swimming_pool',name: 'Kolam Renang'      },
-  { key: 'gym',          name: 'Kebugaran'         },
-  { key: 'meeting_room', name: 'Ruang Meeting'     },
-]
-
-// Daftar jarak ke landmark
 const landmarks = [
   { key: 'dist_gunung_dempo',         label: 'GUNUNG DEMPO'         },
   { key: 'dist_pasar_dempo_permai',   label: 'PASAR DEMPO PERMAI'   },
@@ -165,19 +111,17 @@ async function fetchDetail() {
   loading.value = true
   error.value   = ''
   try {
-    const res = await fetch(`${API_BASE}/api/v1/accommodations/${id}`)
+    const res = await fetch(`${API_BASE}/api/v1/souvenirs/${id}`)
     if (res.status === 404) {
-      error.value = `Akomodasi dengan ID ${id} tidak ditemukan.`
+      error.value = `Toko oleh-oleh dengan ID ${id} tidak ditemukan.`
       return
     }
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     item.value = await res.json()
   } catch (e) {
-    if (e.message.includes('fetch')) {
-      error.value = 'Server backend tidak dapat dihubungi. Jalankan: uvicorn app.main:app --reload (dari folder backend/)'
-    } else {
-      error.value = e.message
-    }
+    error.value = e.message.includes('fetch')
+      ? 'Server backend tidak dapat dihubungi. Jalankan: uvicorn app.main:app --reload'
+      : e.message
   } finally {
     loading.value = false
   }
@@ -213,8 +157,6 @@ onMounted(fetchDetail)
   margin-top: 4px;
   font-weight: 500;
 }
-
-/* Stars in hero */
 .star-row {
   display: flex;
   align-items: center;
@@ -222,10 +164,7 @@ onMounted(fetchDetail)
   gap: 2px;
   margin-top: 8px;
 }
-.star {
-  font-size: 1.2rem;
-  line-height: 1;
-}
+.star { font-size: 1.2rem; line-height: 1; }
 .star.full  { color: #f5c518; }
 .star.half  { color: #f5c518; opacity: 0.6; }
 .star.empty { color: rgba(255,255,255,0.4); }
@@ -235,17 +174,8 @@ onMounted(fetchDetail)
   color: rgba(255,255,255,0.9);
   margin-left: 6px;
 }
-
-/* Stars in detail body */
-.star-row-detail {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-.star-detail {
-  font-size: 1.1rem;
-  line-height: 1;
-}
+.star-row-detail { display: flex; align-items: center; gap: 2px; }
+.star-detail { font-size: 1.1rem; line-height: 1; }
 .star-detail.full  { color: #f5c518; }
 .star-detail.half  { color: #f5c518; opacity: 0.65; }
 .star-detail.empty { color: rgba(255,255,255,0.35); }
@@ -255,11 +185,11 @@ onMounted(fetchDetail)
   color: rgba(255,255,255,0.9);
   margin-left: 6px;
 }
-
 .detail-body {
   background: #2EC4C4;
   flex: 1;
   padding: 10px 16px 20px;
+  overflow-y: auto;
 }
 .section-title {
   font-size: 0.7rem;
@@ -288,44 +218,7 @@ onMounted(fetchDetail)
   font-weight: 600;
   color: #fff;
 }
-.dist-val {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #fff;
-}
-.tel-link {
-  color: #fff;
-  font-weight: 700;
-  text-decoration: underline;
-}
-.facility-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 10px;
-  margin-top: 6px;
-}
-.facility-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #fff;
-  font-size: 0.84rem;
-  font-weight: 500;
-}
-.check {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 800;
-  background: rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.5);
-  flex-shrink: 0;
-}
-.check.active {
-  background: #fff;
-  color: #1BA8A8;
-}
+.dist-val { font-size: 0.88rem; font-weight: 700; }
 .lokasi-btn {
   display: flex;
   align-items: center;
@@ -340,11 +233,6 @@ onMounted(fetchDetail)
   font-size: 0.88rem;
   text-decoration: none;
   box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.lokasi-btn:active {
-  transform: scale(0.97);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.12);
 }
 .state-msg {
   display: flex;
@@ -366,7 +254,6 @@ onMounted(fetchDetail)
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .retry-btn {
-  margin-top: 8px;
   padding: 8px 20px;
   background: #2EC4C4;
   color: #fff;

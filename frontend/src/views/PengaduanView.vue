@@ -7,16 +7,43 @@
         Menurut Kementerian Pendayagunaan Aparatur Negara dan Reformasi Birokrasi (KemenPANRB),
         layanan pengaduan merupakan bagian dari penyelenggaraan pelayanan publik yang menyediakan
         mekanisme bagi masyarakat untuk menyampaikan keluhan, saran, dan aspirasi atas pelayanan
-        yang diberikan oleh instansi pemerintah.
+        yang diberikan oleh instansi pemerintah. Berikut beberapa kanal pengaduan yang dapat Anda
+        gunakan untuk menyampaikaneluhan, saran, dan aspirasi atas pelayanan
+        yang diberikan oleh BPS pada umumnya dan BPS Kota Pagar Alam pada khususnya.
       </p>
+      <a
+        href="https://s.bps.go.id/adu_bps_pga"
+        target="_blank"
+        class="btn-teal"
+        style="margin-top:24px;"
+      >
+      Form Pengaduan BPS Kota Pagar Alam
+      </a>
+      <a
+        href="https://wa.me/6285178683009"
+        target="_blank"
+        class="btn-teal"
+        style="margin-top:24px;"
+      >
+      Pengaduan via Cadas Besemah
+      </a>
+      <a
+        href="https://webapps.bps.go.id/pengaduan/wbs/beranda"
+        target="_blank"
+        class="btn-teal"
+        style="margin-top:24px;"
+      >
+      Whistleblowing BPS RI
+      </a>
       <a
         href="https://www.lapor.go.id/admin/laporan/kelola#waiting"
         target="_blank"
         class="btn-teal"
         style="margin-top:24px;"
       >
-        Klik untuk LAPOR PENGADUAN
+      SPAN Lapor
       </a>
+      
     </div>
     <AppFooter />
   </div>

@@ -10,13 +10,16 @@
         BPS Kota Pagar Alam untuk membantu para wisatawan yang berkunjung ke Kota Pagar Alam dalam
         mencari informasi terkait fasilitas penunjang dalam berwisata di Kota Pagar Alam. Data dalam aplikasi
         ini bersumber dari Updating Direktori berkait pariwisata yang dilakukan oleh BPS Kota Pagar Alam, mulai
-        dari Updating Direktori Jasa Akomodasi (VHTL), Updating Direktori Daya Tarik Wisata (DTW) dan berbagai 
-        kegiatan updating direktori sejenis.
+        dari Updating Direktori Jasa Akomodasi (VHTL), Updating Direktori Daya Tarik Wisata (DTW), Updating database
+        usaha target SE2026 melalui inovasi digital Cari Data Seputar Usaha (Cadas Usaha) yang dibangun oleh tim SPBE
+        BPS Kota Pagar Alam serta kegiatan updating direktori sejenis yang disinkronisasi dengan data spasial dari Google Map
+        terkait pariwisata.
       </p>
 
       <!-- Profil tim -->
+      <br>
       <div class="team-section">
-        <div class="team-title">TIM PENGEMBANG</div>
+        <div class="team-title">TIM PENGEMBANG D'PARIS EGSOTIS 1.0</div>
         <div class="team-card">
           <div class="team-info">
             <div class="team-name">Muhammad Iqbal, S.E.</div>
@@ -28,19 +31,36 @@
           </div>
           <div class="team-info">
             <div class="team-name">Pray Putra Hasianro Nadeak, S.ST.</div>
-            <div class="team-role">Developer</div>
+            <div class="team-role">Developer</div>Supporting System
+          </div>
+        </div>
+        <br>
+        <div class="team-title">TIM PENGEMBANG D'PARIS EGSOTIS 2.0</div>
+        <div class="team-card">
+          <div class="team-avatar">👨‍💼</div>
+          <div class="team-info">
+            <div class="team-name">Pray Putra Hasianro Nadeak, S.ST.</div>
+            <div class="team-role">Leader</div>
           </div>
         </div>
         <div class="team-card">
           <div class="team-avatar">🏛️</div>
           <div class="team-info">
             <div class="team-name">Tim SPBE BPS Kota Pagar Alam</div>
+            <div class="team-role">Developer</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">📊</div>
+          <div class="team-info">
+            <div class="team-name">Tim DLS BPS Kota Pagar Alam</div>
             <div class="team-role">Supporting System</div>
           </div>
         </div>
       </div>
 
       <!-- Kontak -->
+      <br>
       <div class="contact-section">
         <div class="contact-title">KONTAK INSTANSI</div>
         <div class="contact-item">
@@ -60,7 +80,8 @@
           <span>pagaralamkota.bps.go.id</span>
         </div>
       </div>
-
+  
+      <br>
       <button class="btn-white" @click="openYoutube">
         Apa kata mereka tentang DPARIS EGSOTIS?
       </button>

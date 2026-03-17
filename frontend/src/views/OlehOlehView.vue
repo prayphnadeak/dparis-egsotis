@@ -45,19 +45,21 @@
 
     <!-- List -->
     <div v-else class="teal-block-scroll" style="margin-top:14px; position:relative; padding-bottom: 70px;">
-      <a
+      <div
         v-for="item in paginatedData"
         :key="item.id"
-        :href="item.maps_link || '#'"
-        target="_blank"
-        rel="noopener"
         class="list-card shop-card"
+        @click="goToDetail(item.id)"
       >
         <!-- nomor badge -->
         <div class="shop-no">{{ item.id }}</div>
         <div class="shop-info">
           <div class="list-card-name">{{ item.name }}</div>
-          <div class="shop-link-label">
+          <div class="star-row" v-if="item.rating !== null && item.rating !== undefined">
+            <span v-for="s in 5" :key="s" class="star" :class="starClass(item.rating, s)">&#9733;</span>
+            <span class="rating-val">{{ item.rating ? item.rating.toFixed(1) : '' }}</span>
+          </div>
+          <div v-else class="shop-link-label">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
             </svg>
@@ -67,7 +69,7 @@
         <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="9 18 15 12 9 6"/>
         </svg>
-      </a>
+      </div>
       <div v-if="filtered.length === 0" class="empty-msg">
         Tidak ada hasil ditemukan.
       </div>
@@ -89,10 +91,12 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import AppFooter from '../components/AppFooter.vue'
 
 const API_BASE = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : ''
+const router = useRouter()
 
 const search  = ref('')
 const shops   = ref([])
@@ -153,6 +157,29 @@ function prevPage() {
 
 function nextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++
+}
+
+const goToDetail = (id) => router.push({ name: 'oleholeh-detail', params: { id } })
+
+function starClass(rating, starIndex) {
+  if (rating >= starIndex) return 'full'
+  if (rating >= starIndex - 0.5) return 'half'
+  return 'empty'
+}
+
+const landmarks = [
+  { key: 'dist_gunung_dempo',         label: 'GUNUNG DEMPO'         },
+  { key: 'dist_pasar_dempo_permai',   label: 'PASAR DEMPO PERMAI'   },
+  { key: 'dist_bandara_atung_bungsu', label: 'BANDARA ATUNG BUNGSU' },
+  { key: 'dist_rsud_besemah',         label: 'RSUD BESEMAH'         },
+  { key: 'dist_spbu_air_perikan',     label: 'SPBU AIR PERIKAN'     },
+  { key: 'dist_spbu_simpang_manna',   label: 'SPBU SIMPANG MANNA'   },
+  { key: 'dist_spbu_pengandonan',     label: 'SPBU PENGANDONAN'     },
+  { key: 'dist_spbu_karang_dalo',     label: 'SPBU KARANG DALO'     },
+]
+
+function hasDistances(item) {
+  return item && landmarks.some(lm => item[lm.key] !== null && item[lm.key] !== undefined)
 }
 
 onMounted(fetchData)
@@ -280,4 +307,33 @@ onMounted(fetchData)
   cursor: pointer;
   font-weight: 600;
 }
+
+/* Star rating */
+.star-row { display: flex; align-items: center; gap: 1px; margin-top: 5px; }
+.star { font-size: 0.95rem; line-height: 1; color: rgba(255,255,255,0.3); }
+.star.full  { color: #f5c518; }
+.star.half  { color: #f5c518; opacity: 0.6; }
+.star.empty { color: rgba(255,255,255,0.25); }
+.rating-val { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.85); margin-left: 5px; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: flex-end; z-index: 100; }
+.modal-card { background: #fff; border-radius: 24px 24px 0 0; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; max-height: 80vh; overflow-y: auto; }
+.modal-header { background: #2EC4C4; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; color: #fff; font-weight: 700; font-size: 1.05rem; }
+.modal-close { background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer; }
+.modal-body { padding: 20px; background: #2EC4C4; }
+.detail-row { border-bottom: 1px solid rgba(255,255,255,0.25); padding: 10px 0; }
+.detail-label { font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 4px; }
+.detail-value { font-size: 0.92rem; font-weight: 600; color: #fff; }
+.star-row-modal { display: flex; align-items: center; gap: 2px; }
+.star-modal { font-size: 1.05rem; line-height: 1; color: rgba(255,255,255,0.3); }
+.star-modal.full  { color: #f5c518; }
+.star-modal.half  { color: #f5c518; opacity: 0.6; }
+.star-modal.empty { color: rgba(255,255,255,0.25); }
+.rating-val-modal { font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-left: 6px; }
+.lokasi-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 16px 0 4px; padding: 12px 20px; background: rgba(255,255,255,0.95); color: #1BA8A8; border-radius: 30px; font-weight: 700; font-size: 0.88rem; text-decoration: none; box-shadow: 0 3px 12px rgba(0,0,0,0.15); }
+.no-link-msg { margin-top: 16px; text-align: center; color: rgba(255,255,255,0.7); font-size: 0.85rem; }
+.slide-up-enter-active { animation: slideUp 0.3s ease; }
+.slide-up-leave-active { animation: slideUp 0.3s ease reverse; }
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 </style>
