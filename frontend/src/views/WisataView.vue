@@ -13,13 +13,45 @@
     <!-- Filters -->
     <div class="filters-container">
       <!-- Dropdown Backdrop -->
-      <div v-if="showLimitDropdown" class="dropdown-backdrop" @click="closeDropdowns"></div>
+      <div v-if="showTypeDropdown || showDayaTarikDropdown || showLimitDropdown" class="dropdown-backdrop" @click="closeDropdowns"></div>
 
-      <div style="flex: 1;"></div> <!-- Spacer -->
+      <!-- Daya Tarik Filter -->
+      <div class="filter-dropdown">
+        <div class="filter-select" @click="showDayaTarikDropdown = !showDayaTarikDropdown; showTypeDropdown = false; showLimitDropdown = false">
+          <span class="filter-label">DAYA TARIK UTAMA <span v-if="selectedDayaTarik.length">({{ selectedDayaTarik.length }})</span></span>
+        </div>
+        <div v-if="showDayaTarikDropdown" class="dropdown-menu teal-block-scroll">
+          <label class="dropdown-item">
+            <input type="checkbox" :checked="selectedDayaTarik.length === uniqueDayaTarik.length && uniqueDayaTarik.length > 0" @change="toggleAllDayaTarik" />
+            Pilih Semua
+          </label>
+          <label v-for="dt in uniqueDayaTarik" :key="dt" class="dropdown-item">
+            <input type="checkbox" :value="dt" v-model="selectedDayaTarik" />
+            {{ dt }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="filter-dropdown">
+        <div class="filter-select" @click="showTypeDropdown = !showTypeDropdown; showDayaTarikDropdown = false; showLimitDropdown = false">
+          <span class="filter-label">JENIS WISATA <span v-if="selectedTypes.length">({{ selectedTypes.length }})</span></span>
+        </div>
+        <div v-if="showTypeDropdown" class="dropdown-menu teal-block-scroll">
+          <label class="dropdown-item">
+            <input type="checkbox" :checked="selectedTypes.length === typeOptions.length && typeOptions.length > 0" @change="toggleAllTypes" />
+            Pilih Semua
+          </label>
+          <label v-for="opt in typeOptions" :key="opt.value" class="dropdown-item">
+            <input type="checkbox" :value="opt.value" v-model="selectedTypes" />
+            {{ opt.label }}
+          </label>
+        </div>
+      </div>
 
       <!-- Limit Filter -->
       <div class="filter-dropdown" style="flex: 0.4; min-width: 120px;">
-        <div class="filter-select" @click="showLimitDropdown = !showLimitDropdown">
+        <div class="filter-select" @click="showLimitDropdown = !showLimitDropdown; showTypeDropdown = false; showDayaTarikDropdown = false">
           <span class="filter-label">TAMPIL: {{ itemsLimit }}</span>
         </div>
         <div v-if="showLimitDropdown" class="dropdown-menu teal-block-scroll">
@@ -61,6 +93,12 @@
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
           </svg>
           Tap untuk lihat lokasi
+        </div>
+        <div class="list-card-sub" v-if="item.daya_tarik">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.7">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+          </svg>
+          {{ item.daya_tarik }}
         </div>
       </div>
       <div v-if="filtered.length === 0" class="empty-msg">
@@ -114,9 +152,27 @@ async function fetchData() {
 }
 
 const filtered = computed(() => {
+  let result = places.value
+
   const q = search.value.toLowerCase()
-  if (!q) return places.value
-  return places.value.filter(p => p.name.toLowerCase().includes(q))
+  if (q) {
+    result = result.filter(p => p.name.toLowerCase().includes(q))
+  }
+
+  if (selectedTypes.value.length > 0) {
+    // Memfilter wisata yang memiliki SETIDAKNYA SATU jenis yang dipilih (OR logic)
+    // atau jika dimintai AND logic, bisa disesuaikan. Prompt bilang "opsi yang dichecklist" (mirip filter akomodasi yg AND)
+    // Tapi karena tempat wisata bisa saja hanya "alam", lebih logis pakai OR atau AND? 
+    // Di Akomodasi, filter fasilitas itu AND logic (result.filter(a => selectedFacilities.value.every(f => a[f])))
+    // Untuk konsistensi dengan AkomodasiView.vue, saya pakai AND logic:
+    result = result.filter(a => selectedTypes.value.every(f => a[f]))
+  }
+
+  if (selectedDayaTarik.value.length > 0) {
+    result = result.filter(a => selectedDayaTarik.value.includes(a.daya_tarik))
+  }
+
+  return result
 })
 
 let searchTimer = null
@@ -126,12 +182,47 @@ function onSearch() {
 }
 
 // Filters & Pagination
+const showTypeDropdown = ref(false)
+const showDayaTarikDropdown = ref(false)
 const showLimitDropdown = ref(false)
-const closeDropdowns = () => { showLimitDropdown.value = false }
+const closeDropdowns = () => { 
+  showTypeDropdown.value = false
+  showDayaTarikDropdown.value = false
+  showLimitDropdown.value = false 
+}
+
+const uniqueDayaTarik = computed(() => {
+  const dts = places.value
+    .map(p => p.daya_tarik)
+    .filter(d => Boolean(d));
+  return [...new Set(dts)].sort();
+})
+
+const selectedDayaTarik = ref([])
+function toggleAllDayaTarik(e) {
+  if (e.target.checked) selectedDayaTarik.value = [...uniqueDayaTarik.value]
+  else selectedDayaTarik.value = []
+}
+
+const typeOptions = [
+  { label: 'Wisata Alam', value: 'wisata_alam' },
+  { label: 'Wisata Budaya', value: 'wisata_budaya' },
+  { label: 'Wisata Buatan', value: 'wisata_buatan' }
+]
+const selectedTypes = ref([])
+
+function toggleAllTypes(e) {
+  if (e.target.checked) {
+    selectedTypes.value = typeOptions.map(opt => opt.value)
+  } else {
+    selectedTypes.value = []
+  }
+}
+
 const itemsLimit = ref(10)
 const currentPage = ref(1)
 
-watch([search, itemsLimit], () => {
+watch([search, selectedTypes, selectedDayaTarik, itemsLimit], () => {
   currentPage.value = 1
 })
 

@@ -11,6 +11,7 @@ class TourismObject(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     category: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    daya_tarik: Mapped[str] = mapped_column(String(100), nullable=True, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     address: Mapped[str] = mapped_column(String(300), nullable=True)
     opening_hours: Mapped[str] = mapped_column(String(100), nullable=True)
@@ -36,6 +37,11 @@ class TourismObject(Base, TimestampMixin):
     dist_spbu_simpang_manna: Mapped[float] = mapped_column(Float, nullable=True)
     dist_spbu_pengandonan: Mapped[float] = mapped_column(Float, nullable=True)
     dist_spbu_karang_dalo: Mapped[float] = mapped_column(Float, nullable=True)
+
+    # Categories (Wisata types)
+    wisata_alam: Mapped[bool] = mapped_column(Boolean, default=False)
+    wisata_budaya: Mapped[bool] = mapped_column(Boolean, default=False)
+    wisata_buatan: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Media
     image_url: Mapped[str] = mapped_column(String(500), nullable=True)

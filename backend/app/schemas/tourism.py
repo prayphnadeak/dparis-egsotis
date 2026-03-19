@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class TourismBase(BaseModel):
     name: str
     category: str
+    daya_tarik: Optional[str] = None
     rating: Optional[float] = None
     description: Optional[str] = None
     address: Optional[str] = None
@@ -25,6 +26,7 @@ class TourismCreate(TourismBase):
 class TourismUpdate(BaseModel):
     name: Optional[str] = None
     category: Optional[str] = None
+    daya_tarik: Optional[str] = None
     rating: Optional[float] = None
     description: Optional[str] = None
     address: Optional[str] = None
@@ -36,6 +38,11 @@ class TourismUpdate(BaseModel):
     maps_link: Optional[str] = None
     image_url: Optional[str] = None
     is_active: Optional[bool] = None
+
+    # Wisata types
+    wisata_alam: Optional[bool] = None
+    wisata_budaya: Optional[bool] = None
+    wisata_buatan: Optional[bool] = None
 
 
 class TourismResponse(TourismBase):
@@ -54,5 +61,10 @@ class TourismResponse(TourismBase):
     dist_spbu_simpang_manna: Optional[float] = None
     dist_spbu_pengandonan: Optional[float] = None
     dist_spbu_karang_dalo: Optional[float] = None
+
+    # Wisata types
+    wisata_alam: Optional[bool] = False
+    wisata_budaya: Optional[bool] = False
+    wisata_buatan: Optional[bool] = False
 
     model_config = {"from_attributes": True}

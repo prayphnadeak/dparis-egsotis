@@ -50,9 +50,9 @@
             <span v-else>-</span>
           </div>
         </div>
-        <div class="detail-row" v-if="item.description">
+        <div class="detail-row" v-if="item.daya_tarik">
           <div class="detail-label">DESKRIPSI</div>
-          <div class="detail-value">{{ item.description }}</div>
+          <div class="detail-value">{{ item.daya_tarik }}</div>
         </div>
         <div class="detail-row" v-if="item.address">
           <div class="detail-label">ALAMAT</div>
@@ -67,6 +67,19 @@
         <div class="detail-row" v-if="item.opening_hours">
           <div class="detail-label">JAM BUKA</div>
           <div class="detail-value">{{ item.opening_hours }}</div>
+        </div>
+
+        <!-- Jenis Wisata -->
+        <div class="section-title" style="margin-top:14px;">JENIS WISATA</div>
+        <div class="detail-row">
+          <div class="facility-grid">
+            <div v-for="t in tourTypes" :key="t.key" class="facility-item">
+              <div class="check" :class="{ active: item[t.key] }">
+                {{ item[t.key] ? '✓' : '✗' }}
+              </div>
+              <span>{{ t.name }}</span>
+            </div>
+          </div>
         </div>
 
 
@@ -109,6 +122,14 @@ const id     = parseInt(route.params.id)
 const item    = ref(null)
 const loading = ref(true)
 const error   = ref('')
+
+
+
+const tourTypes = [
+  { key: 'wisata_alam', name: 'Wisata Alam' },
+  { key: 'wisata_budaya', name: 'Wisata Budaya' },
+  { key: 'wisata_buatan', name: 'Wisata Buatan' }
+]
 
 const landmarks = [
   { key: 'dist_gunung_dempo',         label: 'GUNUNG DEMPO'         },
@@ -242,6 +263,36 @@ onMounted(fetchDetail)
   font-weight: 600;
   color: #fff;
 }
+
+.facility-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+  margin-top: 6px;
+}
+.facility-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+.check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+.check.active {
+  background: #fff;
+  color: #1BA8A8;
+}
+
 .dist-val { font-size: 0.88rem; font-weight: 700; }
 .tel-link { color: #fff; font-weight: 700; text-decoration: underline; }
 .lokasi-btn {

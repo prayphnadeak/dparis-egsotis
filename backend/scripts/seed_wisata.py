@@ -65,16 +65,20 @@ def seed():
             no   = int(g(0, 0))
             name = str(g(1, "")).strip()
             rating = to_float(g(2))
-            link = str(g(3, "")).strip() if g(3) else ""
+            dt = str(g(3, "")).strip() if g(3) else None
+            w_alam = str(g(4, "")).strip().lower() == "ya"
+            w_budaya = str(g(5, "")).strip().lower() == "ya"
+            w_buatan = str(g(6, "")).strip().lower() == "ya"
+            link = str(g(7, "")).strip() if g(7) else ""
 
-            dist_gunung_dempo         = to_float(g(4))
-            dist_pasar_dempo_permai   = to_float(g(5))
-            dist_bandara_atung_bungsu = to_float(g(6))
-            dist_rsud_besemah         = to_float(g(7))
-            dist_spbu_air_perikan     = to_float(g(8))
-            dist_spbu_simpang_manna   = to_float(g(9))
-            dist_spbu_pengandonan     = to_float(g(10))
-            dist_spbu_karang_dalo     = to_float(g(11))
+            dist_gunung_dempo         = to_float(g(8))
+            dist_pasar_dempo_permai   = to_float(g(9))
+            dist_bandara_atung_bungsu = to_float(g(10))
+            dist_rsud_besemah         = to_float(g(11))
+            dist_spbu_air_perikan     = to_float(g(12))
+            dist_spbu_simpang_manna   = to_float(g(13))
+            dist_spbu_pengandonan     = to_float(g(14))
+            dist_spbu_karang_dalo     = to_float(g(15))
 
             if not name:
                 continue
@@ -84,7 +88,11 @@ def seed():
                 name=name,
                 category="Wisata",
                 rating=rating,
+                daya_tarik=dt,
                 maps_link=link or None,
+                wisata_alam=w_alam,
+                wisata_budaya=w_budaya,
+                wisata_buatan=w_buatan,
                 dist_gunung_dempo=dist_gunung_dempo,
                 dist_pasar_dempo_permai=dist_pasar_dempo_permai,
                 dist_bandara_atung_bungsu=dist_bandara_atung_bungsu,
