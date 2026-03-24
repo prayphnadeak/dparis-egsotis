@@ -51,8 +51,6 @@
         class="list-card shop-card"
         @click="goToDetail(item.id)"
       >
-        <!-- nomor badge -->
-        <div class="shop-no">{{ item.id }}</div>
         <div class="shop-info">
           <div class="list-card-name">{{ item.name }}</div>
           <div class="star-row" v-if="item.rating !== null && item.rating !== undefined">

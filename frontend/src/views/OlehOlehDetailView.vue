@@ -53,10 +53,12 @@
         <!-- Distances to landmarks -->
         <div class="section-title" style="margin-top:14px;">JARAK KE LANDMARK (KM)</div>
         <div class="detail-row" v-for="lm in landmarks" :key="lm.key">
-          <div class="detail-label">{{ lm.label }}</div>
+          <div class="detail-label">
+            <a :href="lm.maps_link" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">{{ lm.label }}</a>
+          </div>
           <div class="detail-value dist-val">
             <span v-if="item[lm.key] !== null && item[lm.key] !== undefined">
-              {{ Number(item[lm.key]).toFixed(2) }} km
+              ± {{ Number(item[lm.key]).toFixed(2) }} km
             </span>
             <span v-else>-</span>
           </div>
@@ -91,14 +93,14 @@ const loading = ref(true)
 const error   = ref('')
 
 const landmarks = [
-  { key: 'dist_gunung_dempo',         label: 'GUNUNG DEMPO'         },
-  { key: 'dist_pasar_dempo_permai',   label: 'PASAR DEMPO PERMAI'   },
-  { key: 'dist_bandara_atung_bungsu', label: 'BANDARA ATUNG BUNGSU' },
-  { key: 'dist_rsud_besemah',         label: 'RSUD BESEMAH'         },
-  { key: 'dist_spbu_air_perikan',     label: 'SPBU AIR PERIKAN'     },
-  { key: 'dist_spbu_simpang_manna',   label: 'SPBU SIMPANG MANNA'   },
-  { key: 'dist_spbu_pengandonan',     label: 'SPBU PENGANDONAN'     },
-  { key: 'dist_spbu_karang_dalo',     label: 'SPBU KARANG DALO'     },
+  { key: 'dist_gunung_dempo',         label: 'GUNUNG DEMPO',         maps_link: 'https://www.google.com/maps/place/Gn.+Dempo/@-4.0230239,103.0933106,14z/data=!4m7!3m6!1s0x2e3714981bba2b89:0x244b9373653089dc!8m2!3d-4.0158333!4d103.1283333!15sCgxHVU5VTkcgREVNUE-SAQd2b2xjYW5v4AEA!16s%2Fm%2F027bxph?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=bcf6c2fb-51c1-4317-a2c7-f2a81e2fb1b3' },
+  { key: 'dist_pasar_dempo_permai',   label: 'PASAR DEMPO PERMAI',   maps_link: 'https://www.google.com/maps/place/Toko+Mebel+FARIDAH/@-4.0201116,103.2518451,20.33z/data=!4m6!3m5!1s0x2e376bc28e915775:0x90f2ce495902e219!8m2!3d-4.0204016!4d103.2523519!16s%2Fg%2F11c2prpkkw?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=28e75fe6-e63c-4098-b1cd-4016bfa2e870' },
+  { key: 'dist_bandara_atung_bungsu', label: 'BANDARA ATUNG BUNGSU', maps_link: 'https://www.google.com/maps/place/Bandar+Udara+Atungbungsu/@-4.0213102,103.3788864,17z/data=!3m1!4b1!4m6!3m5!1s0x2e3766152954d919:0x91108547f6480b38!8m2!3d-4.0213102!4d103.3814613!16s%2Fg%2F12q4_4z3t?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=202a4bc3-eaa0-4702-9702-928e0d781ecc' },
+  { key: 'dist_rsud_besemah',         label: 'RSUD BESEMAH',         maps_link: 'https://www.google.com/maps/place/Rumah+Sakit+Besemah,+Alun+Dua,+Kec.+Pagar+Alam+Utara,+Kota+Pagar+Alam,+Sumatera+Selatan+31518/@-4.009688,103.251616,19z/data=!3m1!4b1!4m6!3m5!1s0x2e376bcfa6a1309b:0x25f9b4934af9e23!8m2!3d-4.0097485!4d103.2522801!16s%2Fg%2F11b8tb2nvs?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=dc3db14b-0448-4323-9532-19dad4733dc8' },
+  { key: 'dist_spbu_air_perikan',     label: 'SPBU AIR PERIKAN',     maps_link: 'https://www.google.com/maps/place/SPBU+Air+Perikan/@-4.0293718,103.2331468,17z/data=!3m1!4b1!4m6!3m5!1s0x2e376b91a3f0dc05:0x6203371061a1520d!8m2!3d-4.0293718!4d103.2357164!16s%2Fg%2F11fylstx8f?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=0a0a4a5e-118d-4e3d-bed2-2cf86c8b7a50' },
+  { key: 'dist_spbu_simpang_manna',   label: 'SPBU SIMPANG MANNA',   maps_link: 'https://www.google.com/maps/place/SPBU+Simpang+Manna/@-4.0338592,103.2615509,17z/data=!3m1!4b1!4m6!3m5!1s0x2e376bfdaf413cbb:0x26a62f638809e04f!8m2!3d-4.0338592!4d103.2641258!16s%2Fg%2F11cjkvdm4g?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=4086c1d7-c80b-4374-861b-75c745b3b2cb' },
+  { key: 'dist_spbu_pengandonan',     label: 'SPBU PENGANDONAN',     maps_link: 'https://www.google.com/maps/place/Pertamina+SPBU+24.315.50+Selibar/@-3.9955929,103.0895486,9.7z/data=!4m7!3m6!1s0x2e376a4c14023641:0xd6b08af48af0de4c!8m2!3d-3.9975673!4d103.236383!15sCg9TUEJVIFBlcmFuZG9uYW5aESIPc3BidSBwZXJhbmRvbmFukgELZ2FzX3N0YXRpb26aASNDaFpEU1VoTk1HOW5TMFZKUTBGblNVUXRkazVIUkdOUkVBReABAPoBBAgAEAw!16s%2Fg%2F11c5zwqfqt?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=5d717224-a3b1-44de-a561-d155cd9fba77' },
+  { key: 'dist_spbu_karang_dalo',     label: 'SPBU KARANG DALO',     maps_link: 'https://www.google.com/maps/place/SPBU+KARANG+DALO/@-4.0543492,103.2912487,17z/data=!3m1!4b1!4m6!3m5!1s0x2e376f76b3560495:0xf85d84e2e090cb35!8m2!3d-4.0543492!4d103.2938236!16s%2Fg%2F11fppg5bff?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=6a444ca2-31ed-4cc6-b5ac-62c66f78dc12' },
 ]
 
 function starClass(rating, starIndex) {
