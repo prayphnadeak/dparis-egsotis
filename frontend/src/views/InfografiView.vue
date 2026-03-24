@@ -1,8 +1,22 @@
 <template>
   <div class="page-wrapper">
-    <AppHeader title="INFOGRAFIS" />
+    <AppHeader title="STATISTIK" />
 
     <div class="teal-block" style="flex:1; overflow-y:auto;">
+      <p class="info-text">
+        Infografis adalah produk diseminasi statistik dengan desain dan tata letak yang menarik
+        untuk menyampaikan beragam data yang menceritakan suatu topik atau fenomena tertentu.
+        BPS Kota Pagar Alam telah mendesain beberapa infografis menarik untuk memperkarya
+        wawasan pengguna data.
+      </p>
+      <router-link
+        to="/dashboard"
+        class="btn-primary"
+        style="margin-top:28px; display:inline-block; text-align:center;"
+      >
+        Klik untuk Lihat Dashboard
+      </router-link>
+      <br>
       <p class="info-text">
         Infografis adalah produk diseminasi statistik dengan desain dan tata letak yang menarik
         untuk menyampaikan beragam data yang menceritakan suatu topik atau fenomena tertentu.

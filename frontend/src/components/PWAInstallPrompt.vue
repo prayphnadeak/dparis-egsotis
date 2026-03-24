@@ -106,6 +106,12 @@ const openDirectUrl = () => {
 }
 
 const installApp = async () => {
+  try {
+    await fetch('/api/v1/statistics/download', { method: 'POST' })
+  } catch (e) {
+    console.error('Download track failed', e)
+  }
+
   if (!deferredPrompt.value) return
   
   deferredPrompt.value.prompt()

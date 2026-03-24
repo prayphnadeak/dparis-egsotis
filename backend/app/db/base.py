@@ -8,3 +8,4 @@ from app.models.infographic import Infographic  # noqa: F401
 from app.models.complaint import Complaint  # noqa: F401
 from app.models.audit_log import AuditLog  # noqa: F401
 from app.models.souvenir import SouvenirShop  # noqa: F401
+from app.models.user_log import UserLog  # noqa: F401

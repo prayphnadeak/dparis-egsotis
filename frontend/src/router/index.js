@@ -12,6 +12,7 @@ import InfografiView from '../views/InfografiView.vue'
 import CadasBesemahView from '../views/CadasBesemahView.vue'
 import PengaduanView from '../views/PengaduanView.vue'
 import TentangKamiView from '../views/TentangKamiView.vue'
+import DashboardView from '../views/DashboardView.vue'
 
 const routes = [
   { path: '/', name: 'welcome', component: WelcomeView },
@@ -27,6 +28,7 @@ const routes = [
   { path: '/cadas-besemah', name: 'cadas-besemah', component: CadasBesemahView },
   { path: '/pengaduan', name: 'pengaduan', component: PengaduanView },
   { path: '/tentang-kami', name: 'tentang-kami', component: TentangKamiView },
+  { path: '/dashboard', name: 'dashboard', component: DashboardView },
 ]
 
 const router = createRouter({

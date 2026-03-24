@@ -12,6 +12,7 @@ from app.api.v1.endpoints import (
     dashboard,
     souvenirs,
     media,
+    statistics,
 )
 
 api_router = APIRouter()
@@ -26,3 +27,4 @@ api_router.include_router(complaints.router, prefix="/v1/complaints", tags=["Pen
 api_router.include_router(dashboard.router, prefix="/v1/dashboard", tags=["Dashboard"])
 api_router.include_router(souvenirs.router, prefix="/v1/souvenirs", tags=["Oleh-Oleh"])
 api_router.include_router(media.router, prefix="/v1/media", tags=["Media"])
+api_router.include_router(statistics.router, prefix="/v1/statistics", tags=["Statistik"])

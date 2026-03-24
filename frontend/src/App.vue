@@ -12,7 +12,16 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import PWAInstallPrompt from './components/PWAInstallPrompt.vue'
+
+onMounted(async () => {
+  try {
+    await fetch('/api/v1/statistics/visit', { method: 'POST' });
+  } catch (err) {
+    console.error('Visit track failed', err);
+  }
+})
 </script>
 
 <style scoped>
