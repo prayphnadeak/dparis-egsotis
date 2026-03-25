@@ -23,12 +23,18 @@ def import_transportation():
     db = SessionLocal()
     df = pd.read_excel('dparis_transportasi.xlsx')
     
+    try:
+        deleted = db.query(Transportation).delete()
+        db.commit()
+        print(f"[INFO] Hapus {deleted} data transportasi lama")
+    except Exception as e:
+        db.rollback()
+        print(f"[ERROR] Error deleting old data: {e}")
+
     # Process rows
     for idx, row in df.iterrows():
-        # Check if already exists? (Maybe not needed if table is fresh, but safe to check)
         name = row['Nama']
-        existing = db.query(Transportation).filter(Transportation.name == name).first()
-        if existing:
+        if pd.isna(name):
             continue
         
         rating = None
@@ -46,6 +52,7 @@ def import_transportation():
             return None
             
         trans = Transportation(
+            id=int(row['No']) if 'No' in df.columns and pd.notna(row.get('No')) else None,
             name=name,
             category=row['MODA TRANSPORTASI'],
             rating=rating,
