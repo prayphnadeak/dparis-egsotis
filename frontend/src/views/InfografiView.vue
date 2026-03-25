@@ -1,23 +1,9 @@
 <template>
   <div class="page-wrapper">
-    <AppHeader title="STATISTIK" />
+    <AppHeader title="INFOGRAFIS" />
 
     <div class="teal-block" style="flex:1; overflow-y:auto;">
       <p class="info-text">
-        Dashboard adalah penyajian statistik deskriptif dari suatu fenomena yang digambarkan dalam berbagai bentuk tabel, grafik dan list data. Dashboard dalam
-        aplikasi ini dibuat sebagai alat monitoring dan evaluasi terkait konten dan aktivitas yang berkaitan erat dengan
-        operasionalisasi dari aplikasi ini.
-      </p>
-      <router-link
-        to="/dashboard"
-        class="btn-primary"
-        style="margin-top:28px; display:inline-block; text-align:center;"
-      >
-        Klik untuk Lihat Dashboard
-      </router-link>
-      <p class="info-text">
-        <br>
-        <br>
         Infografis adalah produk diseminasi statistik dengan desain dan tata letak yang menarik
         untuk menyampaikan beragam data yang menceritakan suatu topik atau fenomena tertentu.
         BPS Kota Pagar Alam telah mendesain beberapa infografis menarik untuk memperkarya

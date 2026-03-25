@@ -1,7 +1,12 @@
 <template>
-  <div class="page-wrapper">
+  <div class="page-wrapper" ref="pdfContent">
     <AppHeader title="KULINER" />
-
+    <div style="text-align: center; padding: 10px 20px 0; background: #fff;" data-html2canvas-ignore="true" v-if="item">
+      <button @click="handleDownloadPdf" class="pdf-btn" :disabled="isExporting">
+        {{ isExporting ? 'Mengekspor...' : 'Download PDF' }}
+      </button>
+    </div>
+    <br>
     <!-- Loading -->
     <div v-if="loading" class="state-msg">
       <div class="spinner"></div>
@@ -88,7 +93,7 @@
         </div>
 
         <!-- Maps button -->
-        <a v-if="item.maps_link" :href="item.maps_link" target="_blank" rel="noopener" class="lokasi-btn">
+        <a v-if="item.maps_link" :href="item.maps_link" target="_blank" rel="noopener" class="lokasi-btn" data-html2canvas-ignore="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
           </svg>
@@ -105,6 +110,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
+import { exportToPdf } from '../utils/exportPdf'
 
 const API_BASE = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : ''
 
@@ -114,6 +120,16 @@ const id     = parseInt(route.params.id)
 const item    = ref(null)
 const loading = ref(true)
 const error   = ref('')
+
+const pdfContent = ref(null)
+const isExporting = ref(false)
+
+const handleDownloadPdf = async () => {
+  if (isExporting.value) return;
+  isExporting.value = true;
+  await exportToPdf(pdfContent.value, 'KulinerDetailView');
+  isExporting.value = false;
+}
 
 const landmarks = [
   { key: 'dist_gunung_dempo',         label: 'GUNUNG DEMPO',         maps_link: 'https://www.google.com/maps/place/Gn.+Dempo/@-4.0230239,103.0933106,14z/data=!4m7!3m6!1s0x2e3714981bba2b89:0x244b9373653089dc!8m2!3d-4.0158333!4d103.1283333!15sCgxHVU5VTkcgREVNUE-SAQd2b2xjYW5v4AEA!16s%2Fm%2F027bxph?entry=tts&g_ep=EgoyMDI2MDMxMS4wIPu8ASoASAFQAw%3D%3D&skid=bcf6c2fb-51c1-4317-a2c7-f2a81e2fb1b3' },
@@ -287,5 +303,20 @@ onMounted(fetchDetail)
   border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
+}
+.pdf-btn {
+  background: #ff8c8c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.pdf-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 </style>

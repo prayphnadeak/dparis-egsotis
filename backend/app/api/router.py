@@ -13,6 +13,7 @@ from app.api.v1.endpoints import (
     souvenirs,
     media,
     statistics,
+    transportations,
 )
 
 api_router = APIRouter()
@@ -28,3 +29,4 @@ api_router.include_router(dashboard.router, prefix="/v1/dashboard", tags=["Dashb
 api_router.include_router(souvenirs.router, prefix="/v1/souvenirs", tags=["Oleh-Oleh"])
 api_router.include_router(media.router, prefix="/v1/media", tags=["Media"])
 api_router.include_router(statistics.router, prefix="/v1/statistics", tags=["Statistik"])
+api_router.include_router(transportations.router, prefix="/v1/transportations", tags=["Transportasi"])

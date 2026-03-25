@@ -35,6 +35,7 @@ def get_dashboard_counts(db: Session = Depends(get_db)):
     from app.models.accommodation import Accommodation
     from app.models.culinary import CulinaryPlace
     from app.models.souvenir import SouvenirShop
+    from app.models.transportation import Transportation
 
     # Wisata
     wisata_raw = db.query(TourismObject.category, func.count(TourismObject.id)).group_by(TourismObject.category).all()
@@ -58,6 +59,11 @@ def get_dashboard_counts(db: Session = Depends(get_db)):
     oleh_total = db.query(func.count(SouvenirShop.id)).scalar() or 0
     oleh_cats = {"Semua": oleh_total} if oleh_total > 0 else {}
 
+    # Transportasi (Moda Transportasi)
+    transport_raw = db.query(Transportation.category, func.count(Transportation.id)).group_by(Transportation.category).all()
+    transport_cats = {row[0] or "Lainnya": row[1] for row in transport_raw}
+    transport_total = sum(transport_cats.values())
+
     return {
         "wisata": {
             "total": wisata_total, 
@@ -67,6 +73,7 @@ def get_dashboard_counts(db: Session = Depends(get_db)):
         "akomodasi": {"total": akomodasi_total, "categories": akomodasi_cats},
         "kuliner": {"total": kuliner_total, "categories": kuliner_cats},
         "oleholeh": {"total": oleh_total, "categories": oleh_cats},
+        "transportasi": {"total": transport_total, "categories": transport_cats},
     }
 
 @router.get("/daily", summary="Dapatkan log statistik pengunjung harian")

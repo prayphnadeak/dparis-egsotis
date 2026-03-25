@@ -1,6 +1,6 @@
 <template>
   <div class="page-wrapper" ref="pdfContent">
-    <AppHeader title="AKOMODASI" />
+    <AppHeader title="TRANSPORTASI" />
     <div style="text-align: center; padding: 10px 20px 0; background: #fff;" data-html2canvas-ignore="true" v-if="item">
       <button @click="handleDownloadPdf" class="pdf-btn" :disabled="isExporting">
         {{ isExporting ? 'Mengekspor...' : 'Download PDF' }}
@@ -10,7 +10,7 @@
     <!-- Loading -->
     <div v-if="loading" class="state-msg">
       <div class="spinner"></div>
-      <span>Memuat detail akomodasi...</span>
+      <span>Memuat detail transportasi...</span>
     </div>
 
     <!-- Error -->
@@ -42,7 +42,7 @@
           <div class="detail-value">{{ item.id }}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">KATEGORI AKOMODASI</div>
+          <div class="detail-label">MODA TRANSPORTASI</div>
           <div class="detail-value">{{ item.category }}</div>
         </div>
         <div class="detail-row">
@@ -56,10 +56,6 @@
           </div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">ALAMAT</div>
-          <div class="detail-value">{{ item.address || '-' }}</div>
-        </div>
-        <div class="detail-row">
           <div class="detail-label">NOMOR TELEPON</div>
           <div class="detail-value">
             <a v-if="item.phone" :href="`tel:${item.phone}`" class="tel-link">
@@ -68,17 +64,10 @@
             <span v-else>-</span>
           </div>
         </div>
-        <div class="detail-row">
-          <div class="detail-label">JUMLAH KAMAR</div>
-          <div class="detail-value">{{ item.total_rooms }} kamar</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">JUMLAH TEMPAT TIDUR</div>
-          <div class="detail-value">{{ item.total_beds }} tempat tidur</div>
-        </div>
+        <!-- Removed Jumlah Kamar & Tempat Tidur -->
 
-        <!-- Facilities -->
-        <div class="section-title" style="margin-top:14px;">FASILITAS</div>
+        <!-- Routes -->
+        <div class="section-title" style="margin-top:14px;">RUTE YANG DILAYANI</div>
         <div class="detail-row">
           <div class="facility-grid">
             <div v-for="f in facilities" :key="f.key" class="facility-item">
@@ -147,19 +136,17 @@ const isExporting = ref(false)
 const handleDownloadPdf = async () => {
   if (isExporting.value) return;
   isExporting.value = true;
-  await exportToPdf(pdfContent.value, 'AkomodasiDetailView');
+  await exportToPdf(pdfContent.value, 'TransportasiDetailView');
   isExporting.value = false;
 }
 
-// Daftar fasilitas yang ditampilkan
+// Daftar rute yang ditampilkan
 const facilities = [
-  { key: 'hot_water',    name: 'Air Panas/Dingin' },
-  { key: 'tv_cable',     name: 'TV Kabel'         },
-  { key: 'free_wifi',    name: 'Free Wifi'         },
-  { key: 'restaurant',   name: 'Restoran'          },
-  { key: 'swimming_pool',name: 'Kolam Renang'      },
-  { key: 'gym',          name: 'Kebugaran'         },
-  { key: 'meeting_room', name: 'Ruang Meeting'     },
+  { key: 'route_palembang',   name: 'Palembang' },
+  { key: 'route_bengkulu',    name: 'Bengkulu'  },
+  { key: 'route_lampung',     name: 'Lampung'   },
+  { key: 'route_jabodetabek', name: 'Jabodetabek' },
+  { key: 'route_jawa',        name: 'Jawa'      },
 ]
 
 // Daftar jarak ke landmark
@@ -184,9 +171,9 @@ async function fetchDetail() {
   loading.value = true
   error.value   = ''
   try {
-    const res = await fetch(`${API_BASE}/api/v1/accommodations/${id}`)
+    const res = await fetch(`${API_BASE}/api/v1/transportations/${id}`)
     if (res.status === 404) {
-      error.value = `Akomodasi dengan ID ${id} tidak ditemukan.`
+      error.value = `Transportasi dengan ID ${id} tidak ditemukan.`
       return
     }
     if (!res.ok) throw new Error(`HTTP ${res.status}`)

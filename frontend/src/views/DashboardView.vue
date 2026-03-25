@@ -1,7 +1,12 @@
 <template>
-  <div class="page-wrapper">
+  <div class="page-wrapper" ref="pdfContent">
     <AppHeader title="DASHBOARD" />
-
+    <div style="text-align: center; padding: 10px 20px 0; background: #fff;" data-html2canvas-ignore="true" v-if="!loading">
+      <button @click="handleDownloadPdf" class="pdf-btn" :disabled="isExporting">
+        {{ isExporting ? 'Mengekspor...' : 'Download PDF' }}
+      </button>
+    </div>
+    <br></br>
     <div class="teal-block" style="flex:1; overflow-y:auto;">
       <div v-if="loading" class="loading-state">
         <p>Memuat Data...</p>
@@ -32,11 +37,8 @@
         <div class="stats-card">
           <h4 class="card-title">Wisata ({{ wisataTotal }})</h4>
           <h5 class="sub-title" style="margin-top:16px;">Menurut Daya Tarik Utama</h5>
-          <div class="category-list">
-            <div class="category-item" v-for="(count, name) in wisataDayaTarik" :key="'dt-' + name">
-              <span>{{ name || 'Lainnya' }}</span>
-              <span class="badge">{{ count }}</span>
-            </div>
+          <div style="height: 260px; margin-top: 10px; width: 100%;">
+            <Bar v-if="wisataChartData" :data="wisataChartData" :options="wisataChartOptions" />
           </div>
         </div>
 
@@ -44,6 +46,19 @@
           <h4 class="card-title">Akomodasi ({{ akomodasiTotal }})</h4>
           <div style="height: 180px; margin-top: 10px; display: flex; justify-content: center;">
             <Pie v-if="akomodasiChartData" :data="akomodasiChartData" :options="pieOptions" />
+          </div>
+        </div>
+
+        <div class="stats-card">
+          <h4 class="card-title">Transportasi ({{ transportasiTotal }})</h4>
+          <h5 class="sub-title" style="margin-top:16px;">Menurut Moda Transportasi</h5>
+          <div class="heatmap-grid">
+            <div v-for="item in transportasiHeatmapData" :key="item.name"
+                 class="heatmap-cell"
+                 :style="{ backgroundColor: `rgba(46, 196, 196, ${item.intensity})` }">
+              <span class="hm-name" :class="{ 'text-dark': item.intensity < 0.5 }">{{ item.name }}</span>
+              <span class="hm-value" :class="{ 'text-dark': item.intensity < 0.5 }">{{ item.count }}</span>
+            </div>
           </div>
         </div>
 
@@ -78,15 +93,26 @@
 import { ref, computed, onMounted } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import AppFooter from '../components/AppFooter.vue'
+import { exportToPdf } from '../utils/exportPdf'
 
-import { Line, Pie } from 'vue-chartjs'
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, ArcElement } from 'chart.js'
+import { Line, Pie, Bar } from 'vue-chartjs'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, ArcElement, BarElement } from 'chart.js'
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, ArcElement)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, ArcElement, BarElement)
 
 const API_BASE = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : ''
 
 const loading = ref(true)
+
+const pdfContent = ref(null)
+const isExporting = ref(false)
+
+const handleDownloadPdf = async () => {
+  if (isExporting.value) return;
+  isExporting.value = true;
+  await exportToPdf(pdfContent.value, 'DashboardView');
+  isExporting.value = false;
+}
 
 const rawLabels = ref([])
 const rawVisData = ref([])
@@ -161,6 +187,21 @@ const chartOptions = {
 const wisataTotal = ref(0)
 const wisataCategories = ref({})
 const wisataDayaTarik = ref({})
+const wisataChartData = ref(null)
+
+const wisataChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  indexAxis: 'y',
+  plugins: {
+    legend: { display: false },
+    tooltip: { enabled: true }
+  },
+  scales: {
+    x: { beginAtZero: true, ticks: { precision: 0 } },
+    y: { display: true, ticks: { font: { size: 11 } } }
+  }
+}
 
 const akomodasiTotal = ref(0)
 const akomodasiCategories = ref({})
@@ -180,6 +221,22 @@ const kulinerCategories = ref({})
 
 const oleholehTotal = ref(0)
 const oleholehCategories = ref({})
+
+const transportasiTotal = ref(0)
+const transportasiCategories = ref({})
+
+const transportasiHeatmapData = computed(() => {
+  const entries = Object.entries(transportasiCategories.value)
+  if (!entries.length) return []
+  
+  const maxCount = Math.max(...entries.map(e => e[1]))
+  
+  return entries.map(([name, count]) => {
+    // Opacity range: 0.2 to 1.0 depending on count vs maxCount
+    const intensity = maxCount > 0 ? 0.2 + (0.8 * (count / maxCount)) : 0.2
+    return { name: name || 'Lainnya', count, intensity }
+  }).sort((a,b) => b.count - a.count)
+})
 
 const fetchStats = async () => {
   try {
@@ -223,6 +280,25 @@ const fetchStats = async () => {
       wisataTotal.value = counts.wisata?.total || 0
       wisataCategories.value = counts.wisata?.categories || {}
       wisataDayaTarik.value = counts.wisata?.daya_tarik || {}
+
+      const wDayaTarikEntries = Object.entries(wisataDayaTarik.value)
+      // Urutkan menurun agar angka paling besar di atas dan paling kecil di bawah
+      wDayaTarikEntries.sort((a, b) => b[1] - a[1])
+      
+      const wLabels = wDayaTarikEntries.map(e => e[0] || 'Lainnya')
+      const wData = wDayaTarikEntries.map(e => e[1])
+
+      if (wData.length > 0) {
+        wisataChartData.value = {
+          labels: wLabels,
+          datasets: [{
+            label: 'Jumlah',
+            data: wData,
+            backgroundColor: '#2EC4C4',
+            borderRadius: 4,
+          }]
+        }
+      }
       
       akomodasiTotal.value = counts.akomodasi?.total || 0
       akomodasiCategories.value = counts.akomodasi?.categories || {}
@@ -254,6 +330,9 @@ const fetchStats = async () => {
       
       oleholehTotal.value = counts.oleholeh?.total || 0
       oleholehCategories.value = counts.oleholeh?.categories || {}
+
+      transportasiTotal.value = counts.transportasi?.total || 0
+      transportasiCategories.value = counts.transportasi?.categories || {}
     }
 
   } catch (e) {
@@ -427,5 +506,57 @@ onMounted(() => {
   cursor: pointer;
   border: 4px solid #20b2aa;
   box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* Heatmap Styles */
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.heatmap-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 8px;
+  border-radius: 8px;
+  color: #fff;
+  transition: transform 0.2s;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.heatmap-cell:hover {
+  transform: scale(1.03);
+}
+.hm-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+.hm-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.text-dark {
+  color: #1a3a5c !important;
+}
+.pdf-btn {
+  background: #ff8c8c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.pdf-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 </style>
