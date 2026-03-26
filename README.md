@@ -39,31 +39,27 @@ Sistem dibangun menggunakan:
 ```mermaid
 graph TD
     A[Admin/Dev] -->|Update SQLite| B(Local Repo)
-    B -->|git commit & push| C{GitHub Repo}
-    C -->|Auto Deploy| D[Frontend: Vercel]
-    C -->|Auto Deploy| E[Backend: Render.com]
-    D -->|API Calls| E
-    E -->|Read Database| F[(SQLite: dparis.db)]
+    B -->|git commit & push| C{Hugging Face Space}
+    C -->|Docker Build| D[Full Stack App]
+    D -->|Read/Write| E[(SQLite: dparis.db)]
 ```
 
-### 🚀 Satu-Klik Deploy
-| Service | Action |
+### 🚀 Akses Aplikasi
+| Service | Link |
 | --- | --- |
-| **Frontend** | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fprayphnadeak%2Fdparis-egsotis&root-directory=frontend) |
-| **Backend** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/prayphnadeak/dparis-egsotis) |
+| **Hugging Face Space** | [🔗 dparis-egsotis](https://huggingface.co/spaces/prayphnadeak/dparis-egsotis) |
 
 ---
 
 ## 💻 WORKFLOW UPDATE DATA
-1. Buka folder `backend/`
-2. Update data di file `dparis.db` (menggunakan DB Browser for SQLite atau script python)
-3. Lakukan Push ke GitHub:
+1. Pastikan database `backend/dparis.db` sudah terupdate.
+2. Lakukan Push ke Hugging Face:
    ```bash
-   git add backend/dparis.db
-   git commit -m "Update database wisata"
-   git push origin main
+   git add .
+   git commit -m "Update data/aplikasi"
+   git push hf main
    ```
-4. Vercel & Render akan otomatis melakukan **Redeploy** dengan data terbaru.
+3. Hugging Face akan otomatis melakukan **Building Docker** dan **Redeploy**.
 
 ---
 
@@ -100,10 +96,10 @@ graph TD
 
 ### Frontend (`frontend/.env`)
 ```
-VITE_API_URL=https://your-backend-url.onrender.com
+VITE_API_URL=https://prayphnadeak-dparis-egsotis.hf.space
 ```
 
-### Backend (`backend/.env`)
+### Backend (`backend/.env` / Space Secrets)
 ```
 DATABASE_URL=sqlite:///./dparis.db
 SECRET_KEY=your-secret-key
