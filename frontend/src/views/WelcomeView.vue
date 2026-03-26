@@ -107,7 +107,10 @@ const menus = [
 }
 
 .welcome-header {
-  background: #fff;
+  background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('../assets/Pagaralam.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 30px 24px 20px;
   display: flex;
   flex-direction: column;
@@ -178,7 +181,7 @@ const menus = [
 
 .menu-grid-wrap {
   background: #2EC4C4;
-  border-radius: 28px 28px 0 0;
+  border-radius: 0;
   flex: 1;
   padding: 28px 20px 40px;
 }
