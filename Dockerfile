@@ -25,6 +25,7 @@ COPY backend/app ./app
 COPY backend/static ./static
 COPY backend/scripts ./scripts
 COPY backend/*.xlsx ./
+COPY backend/dparis.db ./dparis.db
 
 # Copy built frontend from Stage 1
 COPY --from=frontend-builder /app/frontend/dist ./dist
