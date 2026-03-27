@@ -65,4 +65,7 @@ class TransportationResponse(TransportationBase):
     created_at: datetime
     updated_at: datetime
 
+    # Hit view count
+    view_count: int = 1
+
     model_config = ConfigDict(from_attributes=True)

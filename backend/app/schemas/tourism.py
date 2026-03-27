@@ -67,4 +67,7 @@ class TourismResponse(TourismBase):
     wisata_budaya: Optional[bool] = False
     wisata_buatan: Optional[bool] = False
 
+    # Hit view count
+    view_count: int = 1
+
     model_config = {"from_attributes": True}

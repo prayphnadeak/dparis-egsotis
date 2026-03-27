@@ -21,6 +21,19 @@ def get_culinary(id: int, db: Session = Depends(get_db)):
     return CulinaryService(db).get_or_404(id)
 
 
+@router.post("/{id}/hit", summary="Tambah hit view kuliner")
+def hit_culinary(id: int, db: Session = Depends(get_db)):
+    from app.models.culinary import CulinaryPlace
+    obj = db.get(CulinaryPlace, id)
+    if obj is None:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not found")
+    obj.view_count = (obj.view_count or 1) + 1
+    db.commit()
+    db.refresh(obj)
+    return {"view_count": obj.view_count}
+
+
 @router.post("/", response_model=CulinaryResponse, status_code=201, summary="Tambah kuliner (admin)")
 def create_culinary(data: CulinaryCreate, db: Session = Depends(get_db), _: User = Depends(get_current_admin)):
     return CulinaryService(db).create(data)

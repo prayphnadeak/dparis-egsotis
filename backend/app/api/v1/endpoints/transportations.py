@@ -24,6 +24,18 @@ def list_transportations(
 def get_transportation(id: int, db: Session = Depends(get_db)):
     return TransportationService(db).get_or_404(id)
 
+@router.post("/{id}/hit", summary="Tambah hit view transportasi")
+def hit_transportation(id: int, db: Session = Depends(get_db)):
+    from app.models.transportation import Transportation
+    obj = db.get(Transportation, id)
+    if obj is None:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not found")
+    obj.view_count = (obj.view_count or 1) + 1
+    db.commit()
+    db.refresh(obj)
+    return {"view_count": obj.view_count}
+
 @router.post("/", response_model=TransportationResponse, status_code=201, summary="Tambah transportasi (admin)")
 def create_transportation(
     data: TransportationCreate,

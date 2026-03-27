@@ -1,9 +1,16 @@
 <template>
   <div class="page-wrapper" ref="pdfContent">
     <AppHeader title="DASHBOARD" />
-    <div style="text-align: center; padding: 10px 20px 0; background: #fff;" data-html2canvas-ignore="true" v-if="!loading">
+    <div class="action-buttons-wrap" data-html2canvas-ignore="true" v-if="!loading">
       <button @click="handleDownloadPdf" class="pdf-btn" :disabled="isExporting">
         {{ isExporting ? 'Mengekspor...' : 'Download PDF' }}
+      </button>
+      <button @click="handleShare" class="share-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Share
       </button>
     </div>
     <br></br>
@@ -112,6 +119,26 @@ const handleDownloadPdf = async () => {
   isExporting.value = true;
   await exportToPdf(pdfContent.value, 'DashboardView');
   isExporting.value = false;
+}
+
+const handleShare = async () => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Dashboard D\'Paris Egsotis',
+        url: window.location.href
+      });
+    } catch (err) {
+      console.log('Error sharing:', err);
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('Link disalin ke clipboard!');
+    } catch (err) {
+      alert('Gagal menyalin link.');
+    }
+  }
 }
 
 const rawLabels = ref([])
@@ -543,20 +570,5 @@ onMounted(() => {
 }
 .text-dark {
   color: #1a3a5c !important;
-}
-.pdf-btn {
-  background: #ff8c8c;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.pdf-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
 }
 </style>

@@ -21,6 +21,19 @@ def get_souvenir(id: int, db: Session = Depends(get_db)):
     return SouvenirService(db).get_or_404(id)
 
 
+@router.post("/{id}/hit", summary="Tambah hit view oleh-oleh")
+def hit_souvenir(id: int, db: Session = Depends(get_db)):
+    from app.models.souvenir import SouvenirShop
+    obj = db.get(SouvenirShop, id)
+    if obj is None:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not found")
+    obj.view_count = (obj.view_count or 1) + 1
+    db.commit()
+    db.refresh(obj)
+    return {"view_count": obj.view_count}
+
+
 @router.post("/", response_model=SouvenirResponse, status_code=201, summary="Tambah toko oleh-oleh (admin)")
 def create_souvenir(data: SouvenirCreate, db: Session = Depends(get_db), _: User = Depends(get_current_admin)):
     return SouvenirService(db).create(data)

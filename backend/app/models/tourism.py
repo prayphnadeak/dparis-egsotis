@@ -43,6 +43,9 @@ class TourismObject(Base, TimestampMixin):
     wisata_budaya: Mapped[bool] = mapped_column(Boolean, default=False)
     wisata_buatan: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    # Hit view count
+    view_count: Mapped[int] = mapped_column(default=1, nullable=False)
+
     # Media
     image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)

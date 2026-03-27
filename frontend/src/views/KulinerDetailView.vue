@@ -1,9 +1,16 @@
 <template>
   <div class="page-wrapper" ref="pdfContent">
     <AppHeader title="KULINER" />
-    <div style="text-align: center; padding: 10px 20px 0; background: #fff;" data-html2canvas-ignore="true" v-if="item">
+    <div class="action-buttons-wrap" data-html2canvas-ignore="true" v-if="item">
       <button @click="handleDownloadPdf" class="pdf-btn" :disabled="isExporting">
         {{ isExporting ? 'Mengekspor...' : 'Download PDF' }}
+      </button>
+      <button @click="handleShare" class="share-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Share
       </button>
     </div>
     <br>
@@ -99,6 +106,10 @@
           </svg>
           LOKASI: Lihat di Google Maps
         </a>
+        <!-- Hit view badge -->
+        <div v-if="viewCount !== null" class="hit-badge-wrap" data-html2canvas-ignore="true">
+          <span class="hit-badge">👁 Dicari sebanyak {{ viewCount }} kali</span>
+        </div>
       </div>
     </template>
 
@@ -117,9 +128,10 @@ const API_BASE = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VI
 const route  = useRoute()
 const id     = parseInt(route.params.id)
 
-const item    = ref(null)
-const loading = ref(true)
-const error   = ref('')
+const item      = ref(null)
+const loading   = ref(true)
+const error     = ref('')
+const viewCount = ref(null)
 
 const pdfContent = ref(null)
 const isExporting = ref(false)
@@ -129,6 +141,26 @@ const handleDownloadPdf = async () => {
   isExporting.value = true;
   await exportToPdf(pdfContent.value, 'KulinerDetailView');
   isExporting.value = false;
+}
+
+const handleShare = async () => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: item.value?.name || 'D\'Paris Egsotis',
+        url: window.location.href
+      });
+    } catch (err) {
+      console.log('Error sharing:', err);
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('Link disalin ke clipboard!');
+    } catch (err) {
+      alert('Gagal menyalin link.');
+    }
+  }
 }
 
 const landmarks = [
@@ -158,7 +190,16 @@ async function fetchDetail() {
       return
     }
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    item.value = await res.json()
+    const data = await res.json()
+    item.value = data
+    viewCount.value = data.view_count ?? 1
+    try {
+      const hitRes = await fetch(`${API_BASE}/api/v1/culinary/${id}/hit`, { method: 'POST' })
+      if (hitRes.ok) {
+        const hitData = await hitRes.json()
+        viewCount.value = hitData.view_count
+      }
+    } catch (_) {}
   } catch (e) {
     error.value = e.message.includes('fetch')
       ? 'Server backend tidak dapat dihubungi. Jalankan: uvicorn app.main:app --reload'
@@ -304,19 +345,20 @@ onMounted(fetchDetail)
   cursor: pointer;
   font-weight: 600;
 }
-.pdf-btn {
-  background: #ff8c8c;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.hit-badge-wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 0 2px;
 }
-.pdf-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+.hit-badge {
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  display: inline-block;
 }
 </style>

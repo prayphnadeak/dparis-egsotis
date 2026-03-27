@@ -14,7 +14,7 @@
         <div class="body">
           <!-- If in iframe (Hugging Face) -->
           <p v-if="isInIframe">
-            Anda sedang membuka aplikasi di dalam Hugging Face. <br/>
+            Anda sedang membuka aplikasi di dalam tampilan Website. <br/>
             <b>Klik tombol di bawah</b> untuk membuka versi penuh agar bisa diinstal ke HP.
           </p>
           <p v-else-if="isIOS">

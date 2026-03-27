@@ -27,6 +27,19 @@ def get_accommodation(id: int, db: Session = Depends(get_db)):
     return AccommodationService(db).get_or_404(id)
 
 
+@router.post("/{id}/hit", summary="Tambah hit view akomodasi")
+def hit_accommodation(id: int, db: Session = Depends(get_db)):
+    from app.models.accommodation import Accommodation
+    obj = db.get(Accommodation, id)
+    if obj is None:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not found")
+    obj.view_count = (obj.view_count or 1) + 1
+    db.commit()
+    db.refresh(obj)
+    return {"view_count": obj.view_count}
+
+
 @router.post("/", response_model=AccommodationResponse, status_code=201, summary="Tambah akomodasi (admin)")
 def create_accommodation(
     data: AccommodationCreate,

@@ -21,6 +21,19 @@ def get_tourism(id: int, db: Session = Depends(get_db)):
     return TourismService(db).get_or_404(id)
 
 
+@router.post("/{id}/hit", summary="Tambah hit view wisata")
+def hit_tourism(id: int, db: Session = Depends(get_db)):
+    from app.models.tourism import TourismObject
+    obj = db.get(TourismObject, id)
+    if obj is None:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not found")
+    obj.view_count = (obj.view_count or 1) + 1
+    db.commit()
+    db.refresh(obj)
+    return {"view_count": obj.view_count}
+
+
 @router.post("/", response_model=TourismResponse, status_code=201, summary="Tambah objek wisata (admin)")
 def create_tourism(data: TourismCreate, db: Session = Depends(get_db), _: User = Depends(get_current_admin)):
     return TourismService(db).create(data)

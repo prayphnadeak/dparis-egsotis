@@ -10,54 +10,81 @@
       <input v-model="search" type="text" placeholder="Cari transportasi..." @input="onSearch" />
     </div>
 
+    <!-- Most Viewed Banner -->
+    <div v-if="mostViewed" class="most-viewed-banner">
+      <span class="most-viewed-text">
+        Jumlah Pencarian Terbanyak: 
+        <span class="most-viewed-name">{{ mostViewed.name }}</span> 
+        dengan <span class="most-viewed-count">{{ mostViewed.view_count || 0 }}</span> views
+      </span>
+    </div>
+
     <!-- Filters -->
     <div class="filters-container">
       <!-- Dropdown Backdrop -->
-      <div v-if="showCategoryDropdown || showFacilityDropdown || showLimitDropdown" class="dropdown-backdrop" @click="closeDropdowns"></div>
+      <div v-if="showCategoryDropdown || showFacilityDropdown || showLimitDropdown || showSortDropdown" class="dropdown-backdrop" @click="closeDropdowns"></div>
 
-      <!-- Category Filter -->
-      <div class="filter-dropdown">
-        <div class="filter-select" @click="showCategoryDropdown = !showCategoryDropdown; showFacilityDropdown = false; showLimitDropdown = false">
-          <span class="filter-label">MODA TRANSPORTASI <span v-if="selectedCategories.length">({{ selectedCategories.length }})</span></span>
+      <!-- Row 1: Tampil & Urutkan -->
+      <div class="filter-row">
+        <!-- Limit Filter -->
+        <div class="filter-dropdown" style="flex: 0.4;">
+          <div class="filter-select" @click="showLimitDropdown = !showLimitDropdown; showCategoryDropdown = false; showFacilityDropdown = false; showSortDropdown = false">
+            <span class="filter-label">TAMPIL: {{ itemsLimit }}</span>
+          </div>
+          <div v-if="showLimitDropdown" class="dropdown-menu teal-block-scroll">
+            <label v-for="opt in [10, 20, 30, 40, 50, 75, 100]" :key="opt" class="dropdown-item" @click="itemsLimit = opt; showLimitDropdown = false">
+              {{ opt }}
+            </label>
+          </div>
         </div>
-        <div v-if="showCategoryDropdown" class="dropdown-menu teal-block-scroll">
-          <label class="dropdown-item">
-            <input type="checkbox" :checked="selectedCategories.length === uniqueCategories.length && uniqueCategories.length > 0" @change="toggleAllCategories" />
-            Pilih Semua
-          </label>
-          <label v-for="cat in uniqueCategories" :key="cat" class="dropdown-item">
-            <input type="checkbox" :value="cat" v-model="selectedCategories" />
-            {{ cat }}
-          </label>
+
+        <!-- Sort Filter -->
+        <div class="filter-dropdown" style="flex: 0.8; min-width: 150px;">
+          <div class="filter-select" @click="showSortDropdown = !showSortDropdown; showCategoryDropdown = false; showFacilityDropdown = false; showLimitDropdown = false">
+            <span class="filter-label">URUTKAN: {{ sortLabel }}</span>
+          </div>
+          <div v-if="showSortDropdown" class="dropdown-menu teal-block-scroll">
+            <label v-for="opt in sortOptions" :key="opt.label" class="dropdown-item" @click="applySort(opt)">
+              {{ opt.label }}
+            </label>
+          </div>
         </div>
       </div>
 
-      <!-- Facility Filter -->
-      <div class="filter-dropdown">
-        <div class="filter-select" @click="showFacilityDropdown = !showFacilityDropdown; showCategoryDropdown = false; showLimitDropdown = false">
-          <span class="filter-label">RUTE <span v-if="selectedFacilities.length">({{ selectedFacilities.length }})</span></span>
+      <!-- Row 2: Moda & Rute -->
+      <div class="filter-row">
+        <!-- Category Filter -->
+        <div class="filter-dropdown" style="flex: 1;">
+          <div class="filter-select" @click="showCategoryDropdown = !showCategoryDropdown; showFacilityDropdown = false; showLimitDropdown = false">
+            <span class="filter-label">MODA TRANSPORTASI <span v-if="selectedCategories.length">({{ selectedCategories.length }})</span></span>
+          </div>
+          <div v-if="showCategoryDropdown" class="dropdown-menu teal-block-scroll">
+            <label class="dropdown-item">
+              <input type="checkbox" :checked="selectedCategories.length === uniqueCategories.length && uniqueCategories.length > 0" @change="toggleAllCategories" />
+              Pilih Semua
+            </label>
+            <label v-for="cat in uniqueCategories" :key="cat" class="dropdown-item">
+              <input type="checkbox" :value="cat" v-model="selectedCategories" />
+              {{ cat }}
+            </label>
+          </div>
         </div>
-        <div v-if="showFacilityDropdown" class="dropdown-menu teal-block-scroll">
-          <label class="dropdown-item">
-            <input type="checkbox" :checked="selectedFacilities.length === facilityOptions.length && facilityOptions.length > 0" @change="toggleAllFacilities" />
-            Pilih Semua
-          </label>
-          <label v-for="opt in facilityOptions" :key="opt.value" class="dropdown-item">
-            <input type="checkbox" :value="opt.value" v-model="selectedFacilities" />
-            {{ opt.label }}
-          </label>
-        </div>
-      </div>
 
-      <!-- Limit Filter -->
-      <div class="filter-dropdown" style="flex: 0.4;">
-        <div class="filter-select" @click="showLimitDropdown = !showLimitDropdown; showCategoryDropdown = false; showFacilityDropdown = false">
-          <span class="filter-label">TAMPIL: {{ itemsLimit }}</span>
-        </div>
-        <div v-if="showLimitDropdown" class="dropdown-menu teal-block-scroll">
-          <label v-for="opt in [10, 20, 30, 40, 50, 75, 100]" :key="opt" class="dropdown-item" @click="itemsLimit = opt; showLimitDropdown = false">
-            {{ opt }}
-          </label>
+        <!-- Facility Filter -->
+        <div class="filter-dropdown" style="flex: 1;">
+          <div class="filter-select" @click="showFacilityDropdown = !showFacilityDropdown; showCategoryDropdown = false; showLimitDropdown = false">
+            <span class="filter-label">RUTE <span v-if="selectedFacilities.length">({{ selectedFacilities.length }})</span></span>
+          </div>
+          <div v-if="showFacilityDropdown" class="dropdown-menu teal-block-scroll">
+            <label class="dropdown-item">
+              <input type="checkbox" :checked="selectedFacilities.length === facilityOptions.length && facilityOptions.length > 0" @change="toggleAllFacilities" />
+              Pilih Semua
+            </label>
+            <label v-for="opt in facilityOptions" :key="opt.value" class="dropdown-item">
+              <input type="checkbox" :value="opt.value" v-model="selectedFacilities" />
+              {{ opt.label }}
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -88,6 +115,10 @@
         <div class="star-row" v-if="item.rating !== null && item.rating !== undefined">
           <span v-for="s in 5" :key="s" class="star" :class="starClass(item.rating, s)">&#9733;</span>
           <span class="rating-val">{{ item.rating ? item.rating.toFixed(1) : '' }}</span>
+        </div>
+        <!-- Hit view badge -->
+        <div v-if="item.view_count !== undefined" class="hit-badge-card">
+          👁 {{ item.view_count }} views
         </div>
       </div>
       <div v-if="filtered.length === 0" class="empty-msg">
@@ -123,6 +154,11 @@ const akomodasi = ref([])
 const loading = ref(true)
 const error   = ref('')
 
+const mostViewed = computed(() => {
+  if (!akomodasi.value.length) return null
+  return [...akomodasi.value].sort((a, b) => (b.view_count || 0) - (a.view_count || 0))[0]
+})
+
 async function fetchData() {
   loading.value = true
   error.value   = ''
@@ -144,11 +180,50 @@ async function fetchData() {
 const showCategoryDropdown = ref(false)
 const showFacilityDropdown = ref(false)
 const showLimitDropdown = ref(false)
+const showSortDropdown = ref(false)
 const closeDropdowns = () => {
   showCategoryDropdown.value = false
   showFacilityDropdown.value = false
   showLimitDropdown.value = false
+  showSortDropdown.value = false
 }
+
+const sortBy = ref('name')
+const sortOrder = ref('asc')
+
+const sortOptions = [
+  { label: 'Nama (A-Z)', key: 'name', order: 'asc' },
+  { label: 'Nama (Z-A)', key: 'name', order: 'desc' },
+  { label: 'Rating (Tertinggi)', key: 'rating', order: 'desc' },
+  { label: 'Rating (Terrendah)', key: 'rating', order: 'asc' },
+  { label: 'Hit View (Terbanyak)', key: 'view_count', order: 'desc' },
+  { label: 'Hit View (Tersedikit)', key: 'view_count', order: 'asc' }
+]
+
+const sortLabel = computed(() => {
+  const opt = sortOptions.find(o => o.key === sortBy.value && o.order === sortOrder.value)
+  return opt ? opt.label : 'Nama (A-Z)'
+})
+
+const applySort = (opt) => {
+  sortBy.value = opt.key
+  sortOrder.value = opt.order
+  showSortDropdown.value = false
+  currentPage.value = 1
+}
+
+const sorted = computed(() => {
+  return [...filtered.value].sort((a, b) => {
+    let vA = a[sortBy.value]
+    let vB = b[sortBy.value]
+    if (vA === null || vA === undefined) vA = sortBy.value === 'name' ? '' : 0
+    if (vB === null || vB === undefined) vB = sortBy.value === 'name' ? '' : 0
+    if (sortBy.value === 'name') {
+      return sortOrder.value === 'asc' ? vA.localeCompare(vB) : vB.localeCompare(vA)
+    }
+    return sortOrder.value === 'asc' ? vA - vB : vB - vA
+  })
+})
 
 // Client-side filter as fallback and for dropdowns
 const itemsLimit = ref(10)
@@ -218,7 +293,7 @@ const totalPages = computed(() => Math.ceil(filtered.value.length / itemsLimit.v
 const paginatedData = computed(() => {
   const start = (currentPage.value - 1) * itemsLimit.value
   const end = start + itemsLimit.value
-  return filtered.value.slice(start, end)
+  return sorted.value.slice(start, end)
 })
 
 function prevPage() {
@@ -322,23 +397,27 @@ onMounted(fetchData)
   font-weight: 600;
 }
 
+/* Filters */
 .filters-container {
   display: flex;
-  gap: 10px;
-  padding: 0 16px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 10px;
   margin-top: 14px;
   position: relative;
 }
+.filter-row { display: flex; gap: 6px; width: 100%; }
 .filter-dropdown {
   position: relative;
   flex: 1;
+  min-width: 0;
 }
 .filter-select {
-  padding: 10px 12px;
-  border-radius: 20px;
+  padding: 7px 8px;
+  border-radius: 12px;
   border: 1px solid rgba(0,0,0,0.1);
   background: #f7f9fa;
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   color: #1a3a5c;
   outline: none;
   font-weight: 600;
@@ -350,12 +429,13 @@ onMounted(fetchData)
 .filter-select::after {
   content: '';
   display: block;
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="none" stroke="%231a3a5c" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><polyline points="6 9 12 15 18 9"/></svg>');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  margin-left: 2px;
 }
 .filter-label {
   white-space: nowrap;

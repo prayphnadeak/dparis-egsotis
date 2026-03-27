@@ -37,6 +37,9 @@ class CulinaryPlace(Base, TimestampMixin):
     dist_spbu_pengandonan: Mapped[float] = mapped_column(Float, nullable=True)
     dist_spbu_karang_dalo: Mapped[float] = mapped_column(Float, nullable=True)
 
+    # Hit view count
+    view_count: Mapped[int] = mapped_column(default=1, nullable=False)
+
     # Media
     image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)

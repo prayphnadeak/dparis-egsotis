@@ -55,4 +55,7 @@ class CulinaryResponse(CulinaryBase):
     dist_spbu_pengandonan: Optional[float] = None
     dist_spbu_karang_dalo: Optional[float] = None
 
+    # Hit view count
+    view_count: int = 1
+
     model_config = {"from_attributes": True}
